@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { GENRES, type Genre } from "@/lib/types"
 import { subscribeAction } from "@/app/actions"
+import { Check, Loader2 } from "lucide-react"
 
 export function SubscribeForm() {
   const [email, setEmail] = useState("")
@@ -19,6 +20,14 @@ export function SubscribeForm() {
 
   const toggleGenre = (genre: Genre) => {
     setSelectedGenres((prev) => (prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]))
+  }
+
+  const selectAll = () => {
+    setSelectedGenres([...GENRES])
+  }
+
+  const clearAll = () => {
+    setSelectedGenres([])
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,22 +61,26 @@ export function SubscribeForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Name (optional)</Label>
+          <Label htmlFor="name" className="text-sm font-medium">
+            Name (optional)
+          </Label>
           <Input
             id="name"
             type="text"
             placeholder="Your name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="h-12"
+            className="h-11 bg-background"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email address</Label>
+          <Label htmlFor="email" className="text-sm font-medium">
+            Email address
+          </Label>
           <Input
             id="email"
             type="email"
@@ -75,50 +88,85 @@ export function SubscribeForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="h-12"
+            className="h-11 bg-background"
           />
         </div>
       </div>
 
-      <div className="space-y-4">
-        <Label>Choose your genres</Label>
-        <p className="text-sm text-muted-foreground">Select the categories you want to receive quotes from.</p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Label className="text-sm font-medium">Choose your genres</Label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={selectAll}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Select all
+            </button>
+            <span className="text-muted-foreground">·</span>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {GENRES.map((genre) => (
             <label
               key={genre}
-              className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-all ${
+              className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 transition-all ${
                 selectedGenres.includes(genre)
                   ? "border-foreground bg-secondary"
-                  : "border-border hover:border-muted-foreground"
+                  : "border-border hover:border-muted-foreground bg-background"
               }`}
             >
-              <Checkbox checked={selectedGenres.includes(genre)} onCheckedChange={() => toggleGenre(genre)} />
-              <span className="text-sm font-medium">{genre}</span>
+              <Checkbox
+                checked={selectedGenres.includes(genre)}
+                onCheckedChange={() => toggleGenre(genre)}
+                className="h-4 w-4"
+              />
+              <span className="text-sm">{genre}</span>
             </label>
           ))}
         </div>
+
+        {selectedGenres.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {selectedGenres.length} genre{selectedGenres.length !== 1 ? "s" : ""} selected
+          </p>
+        )}
       </div>
 
       {message && (
         <div
-          className={`rounded-lg p-4 text-sm ${
+          className={`flex items-center gap-2 rounded-lg p-4 text-sm ${
             message.type === "success"
-              ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-              : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+              ? "bg-secondary border border-foreground/20 text-foreground"
+              : "bg-destructive/10 border border-destructive/20 text-destructive"
           }`}
         >
+          {message.type === "success" && <Check className="h-4 w-4 shrink-0" />}
           {message.text}
         </div>
       )}
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Subscribing..." : "Subscribe to Daily Quotes"}
+      <Button type="submit" size="lg" className="w-full h-12" disabled={isSubmitting}>
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Subscribing...
+          </>
+        ) : (
+          "Subscribe to Daily Quotes"
+        )}
       </Button>
 
-      <p className="text-center text-xs text-muted-foreground">
-        You can unsubscribe at any time. We respect your inbox.
-      </p>
+      <p className="text-center text-xs text-muted-foreground">No spam, ever. Unsubscribe anytime.</p>
     </form>
   )
 }

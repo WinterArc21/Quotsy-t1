@@ -1,28 +1,28 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { SubscribeForm } from "@/components/subscribe-form"
-import { Mail, Sparkles, Clock, Heart } from "lucide-react"
+import { Mail, Sparkles, Clock, Heart, Quote } from "lucide-react"
 
 const benefits = [
   {
     icon: <Mail className="h-5 w-5" />,
     title: "Daily Inspiration",
-    description: "Receive a handpicked quote every morning to start your day right",
+    description: "A handpicked quote every morning",
   },
   {
     icon: <Sparkles className="h-5 w-5" />,
-    title: "Personalized Selection",
-    description: "Choose your favorite genres and get quotes tailored to your interests",
+    title: "Personalized",
+    description: "Tailored to your favorite genres",
   },
   {
     icon: <Clock className="h-5 w-5" />,
     title: "Timeless Wisdom",
-    description: "Access quotes from history's greatest philosophers, leaders, and artists",
+    description: "From history's greatest minds",
   },
   {
     icon: <Heart className="h-5 w-5" />,
-    title: "Completely Free",
-    description: "No hidden fees, no spam. Just pure inspiration in your inbox",
+    title: "Always Free",
+    description: "No spam, just inspiration",
   },
 ]
 
@@ -32,37 +32,55 @@ export default function SubscribePage() {
       <Header />
 
       <main className="flex-1">
-        <section className="border-b border-border bg-secondary/30 py-12 md:py-16">
-          <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-2xl text-center">
+        <section className="relative overflow-hidden border-b border-border">
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary/50 to-background" />
+          <div className="container relative mx-auto px-4 py-20 md:py-28">
+            <div className="mx-auto max-w-3xl text-center">
               <p className="mb-4 font-mono text-xs uppercase tracking-widest text-muted-foreground">Quote a Day</p>
-              <h1 className="mb-4 font-serif text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl text-balance">
-                Start your mornings with inspiration
+              <h1 className="mb-6 font-serif text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl text-balance">
+                Start every morning with wisdom
               </h1>
-              <p className="text-lg text-muted-foreground text-pretty">
-                Subscribe to receive a daily quote from your favorite genres, delivered straight to your inbox every
-                morning.
+              <p className="text-lg text-muted-foreground md:text-xl text-pretty max-w-2xl mx-auto">
+                Join thousands of readers who begin their day with carefully curated quotes, delivered straight to your
+                inbox.
               </p>
             </div>
           </div>
         </section>
 
-        <section className="py-12 md:py-16">
+        <section className="border-b border-border bg-secondary/30 py-12 md:py-16">
           <div className="container mx-auto px-4">
-            <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-2">
-              {/* Benefits */}
-              <div className="space-y-8">
-                <div>
-                  <h2 className="mb-2 font-serif text-2xl font-bold tracking-tight text-foreground">Why subscribe?</h2>
-                  <p className="text-muted-foreground">
-                    Join thousands of readers who start their day with timeless wisdom.
-                  </p>
-                </div>
+            <div className="mx-auto max-w-3xl text-center">
+              <Quote className="mx-auto mb-6 h-8 w-8 text-muted-foreground/50" />
+              <blockquote className="mb-6">
+                <p className="font-serif text-xl font-medium leading-relaxed text-foreground md:text-2xl lg:text-3xl text-balance">
+                  "The only true wisdom is in knowing you know nothing."
+                </p>
+              </blockquote>
+              <cite className="not-italic">
+                <span className="font-medium text-foreground">Socrates</span>
+                <span className="block text-sm text-muted-foreground mt-1">Greek Philosopher</span>
+              </cite>
+            </div>
+          </div>
+        </section>
 
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
+        <section className="py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto grid max-w-6xl gap-16 lg:grid-cols-2 lg:gap-20">
+              {/* Left Column - Benefits */}
+              <div className="flex flex-col justify-center">
+                <h2 className="mb-4 font-serif text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+                  Why subscribe?
+                </h2>
+                <p className="mb-10 text-muted-foreground text-lg">
+                  A simple way to add meaning to your daily routine.
+                </p>
+
+                <div className="grid grid-cols-2 gap-6">
                   {benefits.map((benefit) => (
-                    <div key={benefit.title} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-secondary text-foreground">
+                    <div key={benefit.title} className="space-y-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-secondary/50 text-foreground">
                         {benefit.icon}
                       </div>
                       <div>
@@ -73,18 +91,33 @@ export default function SubscribePage() {
                   ))}
                 </div>
 
-                <div className="rounded-lg border border-border bg-card p-6">
-                  <blockquote className="mb-4 font-serif text-lg italic text-foreground">
-                    "The only true wisdom is in knowing you know nothing."
-                  </blockquote>
-                  <cite className="text-sm text-muted-foreground not-italic">— Socrates, Greek Philosopher</cite>
+                <div className="mt-12 flex gap-8 border-t border-border pt-8">
+                  <div>
+                    <p className="font-serif text-3xl font-bold text-foreground">1000+</p>
+                    <p className="text-sm text-muted-foreground">Curated quotes</p>
+                  </div>
+                  <div>
+                    <p className="font-serif text-3xl font-bold text-foreground">13</p>
+                    <p className="text-sm text-muted-foreground">Unique genres</p>
+                  </div>
+                  <div>
+                    <p className="font-serif text-3xl font-bold text-foreground">100+</p>
+                    <p className="text-sm text-muted-foreground">Notable authors</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Form */}
-              <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
-                <h2 className="mb-6 font-serif text-xl font-bold text-foreground">Subscribe to Daily Quotes</h2>
-                <SubscribeForm />
+              {/* Right Column - Form */}
+              <div>
+                <div className="rounded-2xl border border-border bg-card p-8 md:p-10 shadow-sm">
+                  <div className="mb-8">
+                    <h2 className="font-serif text-xl font-bold text-foreground md:text-2xl">Get your daily quote</h2>
+                    <p className="mt-2 text-muted-foreground">
+                      Choose your genres and we'll send you inspiration every morning.
+                    </p>
+                  </div>
+                  <SubscribeForm />
+                </div>
               </div>
             </div>
           </div>
