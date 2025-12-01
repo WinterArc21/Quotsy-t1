@@ -14,6 +14,7 @@ import {
   Sparkles,
   Clock,
   Star,
+  PenLine,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
@@ -97,6 +98,12 @@ export default async function HomePage() {
                 </Button>
                 <Button asChild variant="outline" size="lg" className="h-12 px-8 bg-transparent">
                   <Link href="/subscribe">Get Daily Quotes</Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="h-12 px-8 bg-transparent">
+                  <Link href="/submit">
+                    <PenLine className="mr-2 h-4 w-4" />
+                    Submit Quote
+                  </Link>
                 </Button>
               </div>
             </div>

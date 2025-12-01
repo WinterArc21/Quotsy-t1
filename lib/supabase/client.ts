@@ -1,5 +1,22 @@
 import { createBrowserClient } from "@supabase/ssr"
+import type { SupabaseClient } from "@supabase/supabase-js"
+
+const globalForSupabase = globalThis as typeof globalThis & {
+  supabaseClient?: SupabaseClient
+}
 
 export function createClient() {
-  return createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+  if (globalForSupabase.supabaseClient) {
+    return globalForSupabase.supabaseClient
+  }
+
+  globalForSupabase.supabaseClient = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      isSingleton: true,
+    },
+  )
+
+  return globalForSupabase.supabaseClient
 }

@@ -17,6 +17,12 @@ export function Header() {
             Browse
           </Link>
           <Link
+            href="/submit"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Submit
+          </Link>
+          <Link
             href="/subscribe"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >

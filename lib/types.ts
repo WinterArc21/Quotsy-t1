@@ -16,6 +16,17 @@ export interface Subscriber {
   subscribed_at: string
 }
 
+export interface PendingQuote {
+  id: number
+  text: string
+  author: string
+  genre: string
+  submitter_email: string | null
+  status: "pending" | "approved" | "rejected"
+  submitted_at: string
+  reviewed_at: string | null
+}
+
 export const GENRES = [
   "Philosophy",
   "Love",
