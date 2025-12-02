@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: "Quotsy - 1000+ Inspiring Quotes",
     description: "Discover timeless wisdom from history's greatest minds.",
   },
-    generator: 'v0.app'
+  generator: 'v0.app'
 }
 
 export const viewport: Viewport = {
@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased" suppressHydrationWarning>
         {children}
         <Analytics />
       </body>
