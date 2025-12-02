@@ -56,18 +56,26 @@ const genres = [
 export default async function HomePage() {
   const supabase = await createClient()
 
-  // Fetch featured quotes
-  const { data: featuredQuotes } = await supabase
-    .from("quotes")
-    .select("*")
-    .limit(6)
-    .order("created_at", { ascending: false })
+  let featuredQuotes = null
+  let quoteOfTheDay = null
 
-  // Fetch quote of the day (based on date seed)
-  const today = new Date().toISOString().split("T")[0]
-  const seed = today.split("-").reduce((a, b) => a + Number.parseInt(b), 0)
-  const { data: allQuotes } = await supabase.from("quotes").select("*")
-  const quoteOfTheDay = allQuotes?.[seed % (allQuotes?.length || 1)]
+  if (supabase) {
+    // Fetch featured quotes
+    const { data: featured } = await supabase
+      .from("quotes")
+      .select("*")
+      .limit(6)
+      .order("created_at", { ascending: false })
+    featuredQuotes = featured
+
+    // Fetch quote of the day (based on date seed)
+    const today = new Date().toISOString().split("T")[0]
+    const seed = today.split("-").reduce((a, b) => a + Number.parseInt(b), 0)
+    const { data: allQuotes } = await supabase.from("quotes").select("*")
+    quoteOfTheDay = allQuotes?.[seed % (allQuotes?.length || 1)]
+  } else {
+    console.warn("Supabase client not initialized. Missing environment variables.")
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">

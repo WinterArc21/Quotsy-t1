@@ -26,6 +26,10 @@ export async function subscribeAction(formData: FormData) {
 
   const supabase = await createClient()
 
+  if (!supabase) {
+    return { success: false, message: "Service unavailable" }
+  }
+
   // Check if already subscribed
   const { data: existing } = await supabase.from("subscribers").select("id").eq("email", email).maybeSingle()
 
@@ -129,6 +133,10 @@ export async function submitQuoteAction(formData: FormData) {
 
   const supabase = await createClient()
 
+  if (!supabase) {
+    return { success: false, message: "Service unavailable" }
+  }
+
   const { error } = await supabase.from("pending_quotes").insert({
     text: text.trim(),
     author: author.trim() || "Anonymous",
@@ -190,6 +198,10 @@ export async function approveQuoteAction(id: number, genre: string) {
 
   const supabase = await createClient()
 
+  if (!supabase) {
+    return { success: false, message: "Service unavailable" }
+  }
+
   // Get the pending quote
   const { data: pendingQuote, error: fetchError } = await supabase
     .from("pending_quotes")
@@ -234,6 +246,10 @@ export async function rejectQuoteAction(id: number) {
 
   const supabase = await createClient()
 
+  if (!supabase) {
+    return { success: false, message: "Service unavailable" }
+  }
+
   const { error } = await supabase
     .from("pending_quotes")
     .update({ status: "rejected", reviewed_at: new Date().toISOString() })
@@ -254,6 +270,10 @@ export async function restoreQuoteAction(id: number) {
 
   const supabase = await createClient()
 
+  if (!supabase) {
+    return { success: false, message: "Service unavailable" }
+  }
+
   const { error } = await supabase.from("pending_quotes").update({ status: "pending", reviewed_at: null }).eq("id", id)
 
   if (error) {
@@ -270,6 +290,10 @@ export async function getPendingQuotesAction(status?: string) {
   }
 
   const supabase = await createClient()
+
+  if (!supabase) {
+    return { success: false, message: "Service unavailable", data: [] }
+  }
 
   let query = supabase.from("pending_quotes").select("*").order("submitted_at", { ascending: false })
 

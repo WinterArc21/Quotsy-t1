@@ -17,6 +17,15 @@ interface BrowsePageProps {
 
 async function QuotesList({ searchParams }: { searchParams: Awaited<BrowsePageProps["searchParams"]> }) {
   const supabase = await createClient()
+
+  if (!supabase) {
+    return (
+      <div className="rounded-lg border border-border bg-card p-8 text-center">
+        <p className="text-muted-foreground">Database connection unavailable.</p>
+      </div>
+    )
+  }
+
   const { q, genre, author } = searchParams
 
   let query = supabase.from("quotes").select("*")
