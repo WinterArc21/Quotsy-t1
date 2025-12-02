@@ -10,12 +10,7 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          <Link
-            href="/browse"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Browse
-          </Link>
+
           <Link
             href="/submit"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"

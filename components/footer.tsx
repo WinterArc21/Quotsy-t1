@@ -16,13 +16,13 @@ export function Footer() {
             <h4 className="text-sm font-semibold uppercase tracking-wider">Explore</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/browse" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Browse Quotes
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/browse?genre=Philosophy"
+                  href="/?genre=Philosophy#quotes"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Philosophy
@@ -30,7 +30,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/browse?genre=Love"
+                  href="/?genre=Love#quotes"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Love
@@ -38,7 +38,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/browse?genre=Wisdom"
+                  href="/?genre=Wisdom#quotes"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Wisdom
@@ -52,7 +52,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/browse?genre=Success"
+                  href="/?genre=Success#quotes"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Success
@@ -60,7 +60,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/browse?genre=Motivation"
+                  href="/?genre=Motivation#quotes"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Motivation
@@ -68,7 +68,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/browse?genre=Leadership"
+                  href="/?genre=Leadership#quotes"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Leadership
@@ -76,7 +76,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/browse?genre=Creativity"
+                  href="/?genre=Creativity#quotes"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Creativity

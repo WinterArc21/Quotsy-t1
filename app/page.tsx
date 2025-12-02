@@ -1,72 +1,45 @@
 import type React from "react"
 import Link from "next/link"
-import {
-  ArrowRight,
-  Lightbulb,
-  Heart,
-  Trophy,
-  Brain,
-  Zap,
-  Smile,
-  Palette,
-  Users,
-  Shield,
-  Sparkles,
-  Clock,
-  Star,
-  PenLine,
-} from "lucide-react"
+import { ArrowRight, PenLine } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { QuoteCard } from "@/components/quote-card"
+import { SearchQuotes } from "@/components/search-quotes"
 import { createClient } from "@/lib/supabase/server"
 
-const genreIcons: Record<string, React.ReactNode> = {
-  Philosophy: <Lightbulb className="h-5 w-5" />,
-  Love: <Heart className="h-5 w-5" />,
-  Success: <Trophy className="h-5 w-5" />,
-  Wisdom: <Brain className="h-5 w-5" />,
-  Motivation: <Zap className="h-5 w-5" />,
-  Happiness: <Smile className="h-5 w-5" />,
-  Creativity: <Palette className="h-5 w-5" />,
-  Leadership: <Users className="h-5 w-5" />,
-  Courage: <Shield className="h-5 w-5" />,
-  Life: <Sparkles className="h-5 w-5" />,
-  Change: <Clock className="h-5 w-5" />,
-  Friendship: <Star className="h-5 w-5" />,
-  Time: <Clock className="h-5 w-5" />,
-}
 
-const genres = [
-  "Philosophy",
-  "Love",
-  "Success",
-  "Wisdom",
-  "Motivation",
-  "Happiness",
-  "Creativity",
-  "Leadership",
-  "Courage",
-  "Life",
-  "Change",
-  "Friendship",
-]
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; genre?: string; author?: string }>
+}) {
   const supabase = await createClient()
+  const { q, genre, author } = await searchParams
 
-  let featuredQuotes = null
+  let quotes = null
   let quoteOfTheDay = null
 
   if (supabase) {
-    // Fetch featured quotes
-    const { data: featured } = await supabase
-      .from("quotes")
-      .select("*")
-      .limit(6)
-      .order("created_at", { ascending: false })
-    featuredQuotes = featured
+    // Build query for quotes
+    let query = supabase.from("quotes").select("*")
+
+    if (q) {
+      query = query.or(`text.ilike.%${q}%,author.ilike.%${q}%`)
+    }
+
+    if (genre && genre !== "all") {
+      query = query.eq("genre", genre)
+    }
+
+    if (author) {
+      query = query.ilike("author", `%${author}%`)
+    }
+
+    // Fetch quotes (limit 50 for the feed)
+    const { data: fetchedQuotes } = await query.order("created_at", { ascending: false }).limit(50)
+    quotes = fetchedQuotes
 
     // Fetch quote of the day (based on date seed)
     const today = new Date().toISOString().split("T")[0]
@@ -97,22 +70,20 @@ export default async function HomePage() {
                 Discover timeless wisdom from history's greatest minds. Get a daily dose of inspiration delivered to
                 your inbox.
               </p>
-              <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                <Button asChild size="lg" className="h-12 px-8">
-                  <Link href="/browse">
-                    Explore Quotes
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 px-8 bg-transparent">
-                  <Link href="/subscribe">Get Daily Quotes</Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 px-8 bg-transparent">
-                  <Link href="/submit">
-                    <PenLine className="mr-2 h-4 w-4" />
-                    Submit Quote
-                  </Link>
-                </Button>
+              <div className="mx-auto max-w-2xl">
+                <SearchQuotes />
+                <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                  <Button asChild variant="outline" size="sm" className="bg-transparent text-muted-foreground hover:text-foreground">
+                    <Link href="/subscribe">Get Daily Quotes</Link>
+                  </Button>
+                  <span className="hidden text-muted-foreground sm:inline">•</span>
+                  <Button asChild variant="outline" size="sm" className="bg-transparent text-muted-foreground hover:text-foreground">
+                    <Link href="/submit">
+                      <PenLine className="mr-2 h-4 w-4" />
+                      Submit Quote
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -142,66 +113,40 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* Browse by Genre */}
-        <section className="py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="mb-12 text-center">
-              <h2 className="mb-4 font-serif text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                Browse by Genre
-              </h2>
-              <p className="text-muted-foreground">Find quotes that resonate with your current mood or needs</p>
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {genres.map((genre) => (
-                <Link
-                  key={genre}
-                  href={`/browse?genre=${genre}`}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 transition-all hover:border-foreground hover:bg-secondary"
-                >
-                  <div className="text-muted-foreground transition-colors group-hover:text-foreground">
-                    {genreIcons[genre]}
-                  </div>
-                  <span className="text-sm font-medium text-foreground">{genre}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* Featured Quotes */}
-        {featuredQuotes && featuredQuotes.length > 0 && (
-          <section className="border-t border-border bg-secondary/20 py-16 md:py-24">
-            <div className="container mx-auto px-4">
-              <div className="mb-12 flex items-center justify-between">
-                <div>
-                  <h2 className="mb-2 font-serif text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                    Featured Quotes
-                  </h2>
-                  <p className="text-muted-foreground">Handpicked wisdom for you</p>
-                </div>
-                <Button asChild variant="outline" className="hidden bg-transparent sm:flex">
-                  <Link href="/browse">
-                    View All
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
+
+        {/* Quotes List */}
+        <section id="quotes" className="border-t border-border bg-secondary/20 py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="mb-12 flex items-center justify-between">
+              <div>
+                <h2 className="mb-2 font-serif text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                  {q || (genre && genre !== "all") || author ? "Search Results" : "Latest Quotes"}
+                </h2>
+                <p className="text-muted-foreground">
+                  {q || (genre && genre !== "all") || author
+                    ? `Showing results for ${[q && `"${q}"`, genre !== "all" && genre, author && `author "${author}"`].filter(Boolean).join(", ")}`
+                    : "Handpicked wisdom for you"}
+                </p>
               </div>
+            </div>
+
+            {quotes && quotes.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {featuredQuotes.map((quote) => (
+                {quotes.map((quote) => (
                   <QuoteCard key={quote.id} quote={quote} />
                 ))}
               </div>
-              <div className="mt-8 text-center sm:hidden">
-                <Button asChild variant="outline" className="bg-transparent">
-                  <Link href="/browse">
-                    View All Quotes
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
+            ) : (
+              <div className="py-12 text-center">
+                <p className="text-lg text-muted-foreground">No quotes found matching your criteria.</p>
+                <Button asChild variant="link" className="mt-2">
+                  <Link href="/">Clear filters</Link>
                 </Button>
               </div>
-            </div>
-          </section>
-        )}
+            )}
+          </div>
+        </section>
 
         {/* Subscribe CTA */}
         <section className="py-16 md:py-24">

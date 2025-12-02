@@ -22,14 +22,14 @@ export function SearchQuotes() {
     if (genre && genre !== "all") params.set("genre", genre)
     if (author) params.set("author", author)
 
-    router.push(`/browse?${params.toString()}`)
+    router.push(`/?${params.toString()}`)
   }
 
   const clearFilters = () => {
     setSearch("")
     setGenre("all")
     setAuthor("")
-    router.push("/browse")
+    router.push("/")
   }
 
   useEffect(() => {
