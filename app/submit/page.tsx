@@ -37,7 +37,7 @@ export default function SubmitPage() {
           <div className="container mx-auto px-4">
             <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
               {/* Left Column: Form */}
-              <div className="lg:col-span-7">
+              <div className="lg:col-start-2 lg:col-span-6">
                 <div className="mb-8">
                   <h2 className="font-serif text-2xl font-bold mb-4">Submit a Quote</h2>
                   <p className="text-muted-foreground">
@@ -48,8 +48,8 @@ export default function SubmitPage() {
               </div>
 
               {/* Right Column: Guidelines */}
-              <div className="lg:col-span-5">
-                <div className="sticky top-24 rounded-2xl border border-border bg-neutral-50/50 p-6 md:p-8">
+              <div className="lg:col-span-4">
+                <div className="sticky top-24 rounded-2xl border border-neutral-400 bg-neutral-50/50 p-6 md:p-8">
                   <h2 className="font-serif text-xl font-bold mb-6">Submission Guidelines</h2>
 
                   <div className="space-y-8">
