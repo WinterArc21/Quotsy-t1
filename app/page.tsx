@@ -1,4 +1,5 @@
 import type React from "react"
+import { Suspense } from "react"
 import Link from "next/link"
 import { ArrowRight, PenLine } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -44,8 +45,22 @@ export default async function HomePage({
     // Fetch quote of the day (based on date seed)
     const today = new Date().toISOString().split("T")[0]
     const seed = today.split("-").reduce((a, b) => a + Number.parseInt(b), 0)
-    const { data: allQuotes } = await supabase.from("quotes").select("*")
-    quoteOfTheDay = allQuotes?.[seed % (allQuotes?.length || 1)]
+
+    // Get total count first
+    const { count } = await supabase
+      .from("quotes")
+      .select("*", { count: "exact", head: true })
+
+    // Only fetch quote if database has quotes
+    if (count && count > 0) {
+      const index = seed % count
+      const { data } = await supabase
+        .from("quotes")
+        .select("*")
+        .range(index, index)
+        .single()
+      quoteOfTheDay = data
+    }
   } else {
     console.warn("Supabase client not initialized. Missing environment variables.")
   }
@@ -71,7 +86,9 @@ export default async function HomePage({
                 your inbox.
               </p>
               <div className="mx-auto max-w-2xl">
-                <SearchQuotes />
+                <Suspense fallback={<div className="h-12 animate-pulse rounded-lg bg-muted" />}>
+                  <SearchQuotes />
+                </Suspense>
                 <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
                   <Button asChild variant="outline" size="sm" className="bg-transparent text-muted-foreground hover:text-foreground">
                     <Link href="/subscribe">Get Daily Quotes</Link>
