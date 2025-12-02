@@ -32,43 +32,61 @@ export default function SubmitPage() {
           </div>
         </section>
 
-        {/* Form Section */}
-        <section className="py-16 md:py-24">
+        {/* Main Content */}
+        <section className="py-12 md:py-16 lg:py-24">
           <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-xl">
-              <SubmitQuoteForm />
-            </div>
-          </div>
-        </section>
-
-        {/* Guidelines */}
-        <section className="border-t border-border bg-neutral-50 py-16">
-          <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-2xl">
-              <h2 className="font-serif text-2xl font-bold mb-8 text-center">Submission Guidelines</h2>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="bg-background p-6 rounded-lg border border-border">
-                  <h3 className="font-semibold mb-2">What we accept</h3>
-                  <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• Inspirational & thought-provoking quotes</li>
-                    <li>• Original quotes you've written</li>
-                    <li>• Verified quotes from known authors</li>
-                    <li>• Timeless wisdom from any era</li>
-                  </ul>
+            <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+              {/* Left Column: Form */}
+              <div className="lg:col-span-7">
+                <div className="mb-8">
+                  <h2 className="font-serif text-2xl font-bold mb-4">Submit a Quote</h2>
+                  <p className="text-muted-foreground">
+                    Fill out the form below to share your wisdom. Please ensure all details are accurate.
+                  </p>
                 </div>
-                <div className="bg-background p-6 rounded-lg border border-border">
-                  <h3 className="font-semibold mb-2">What we don't accept</h3>
-                  <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• Offensive or hateful content</li>
-                    <li>• Promotional or commercial content</li>
-                    <li>• Misattributed quotes</li>
-                    <li>• Duplicate submissions</li>
-                  </ul>
+                <SubmitQuoteForm />
+              </div>
+
+              {/* Right Column: Guidelines */}
+              <div className="lg:col-span-5">
+                <div className="sticky top-24 rounded-2xl border border-border bg-neutral-50/50 p-6 md:p-8">
+                  <h2 className="font-serif text-xl font-bold mb-6">Submission Guidelines</h2>
+
+                  <div className="space-y-8">
+                    <div>
+                      <h3 className="font-medium text-foreground mb-3 flex items-center gap-2">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs text-green-600">✓</span>
+                        What we accept
+                      </h3>
+                      <ul className="text-sm text-muted-foreground space-y-2.5 ml-8 list-disc">
+                        <li>Inspirational & thought-provoking quotes</li>
+                        <li>Original quotes you've written</li>
+                        <li>Verified quotes from known authors</li>
+                        <li>Timeless wisdom from any era</li>
+                      </ul>
+                    </div>
+
+                    <div className="border-t border-border/50 pt-6">
+                      <h3 className="font-medium text-foreground mb-3 flex items-center gap-2">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-xs text-red-600">✕</span>
+                        What we don't accept
+                      </h3>
+                      <ul className="text-sm text-muted-foreground space-y-2.5 ml-8 list-disc">
+                        <li>Offensive or hateful content</li>
+                        <li>Promotional or commercial content</li>
+                        <li>Misattributed quotes</li>
+                        <li>Duplicate submissions</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 pt-6 border-t border-border">
+                    <p className="text-xs text-muted-foreground text-center">
+                      All submissions are reviewed by our team within 24-48 hours.
+                    </p>
+                  </div>
                 </div>
               </div>
-              <p className="mt-8 text-center text-sm text-muted-foreground">
-                All submissions are reviewed by our team before being added to the collection.
-              </p>
             </div>
           </div>
         </section>
