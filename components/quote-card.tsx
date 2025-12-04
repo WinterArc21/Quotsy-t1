@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Copy, Check, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { QuoteCardGenerator } from "@/components/quote-card-generator"
 import type { Quote } from "@/lib/types"
 
 interface QuoteCardProps {
@@ -34,9 +35,8 @@ export function QuoteCard({ quote, featured = false }: QuoteCardProps) {
 
   return (
     <article
-      className={`group relative flex flex-col justify-between rounded-lg border border-border/50 bg-card p-6 transition-all duration-300 hover:border-border hover:shadow-lg ${
-        featured ? "md:p-10" : ""
-      }`}
+      className={`group relative flex flex-col justify-between rounded-lg border border-border/50 bg-card p-6 transition-all duration-300 hover:border-border hover:shadow-lg ${featured ? "md:p-10" : ""
+        }`}
     >
       <div className="space-y-4">
         <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
@@ -57,6 +57,7 @@ export function QuoteCard({ quote, featured = false }: QuoteCardProps) {
         </div>
 
         <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <QuoteCardGenerator quote={quote} />
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copyToClipboard} aria-label="Copy quote">
             {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
           </Button>
