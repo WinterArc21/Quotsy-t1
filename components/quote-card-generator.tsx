@@ -21,7 +21,9 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
     const [selectedThemeId, setSelectedThemeId] = useState("modern")
     const [ratio, setRatio] = useState<"square" | "portrait">("square")
     const [rounded, setRounded] = useState(true)
-    const [isGenerating, setIsGenerating] = useState(false)
+
+    const [isDownloading, setIsDownloading] = useState(false)
+    const [isCopying, setIsCopying] = useState(false)
     const cardRef = useRef<HTMLDivElement>(null)
 
     const selectedTheme = THEMES.find((t) => t.id === selectedThemeId) || THEMES[0]
@@ -43,7 +45,7 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
 
     const handleDownload = async () => {
         try {
-            setIsGenerating(true)
+            setIsDownloading(true)
             const dataUrl = await generateImage()
             if (!dataUrl) throw new Error("Failed to generate image")
 
@@ -56,13 +58,13 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
             console.error(error)
             toast.error("Failed to download card")
         } finally {
-            setIsGenerating(false)
+            setIsDownloading(false)
         }
     }
 
     const handleCopy = async () => {
         try {
-            setIsGenerating(true)
+            setIsCopying(true)
             if (!cardRef.current) return
 
             const blob = await toBlob(cardRef.current, {
@@ -82,7 +84,7 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
             console.error(error)
             toast.error("Failed to copy card")
         } finally {
-            setIsGenerating(false)
+            setIsCopying(false)
         }
     }
 
@@ -95,9 +97,9 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent className="max-w-4xl w-full flex flex-col md:flex-row gap-0 p-0 overflow-hidden h-[90vh] md:h-auto">
+            <DialogContent className="max-w-4xl w-full flex flex-col md:flex-row gap-0 p-0 overflow-hidden h-[90vh] md:h-[700px]">
                 {/* Preview Area */}
-                <div className="flex-1 bg-secondary/30 p-8 flex items-center justify-center overflow-auto min-h-[400px]">
+                <div className="flex-1 bg-secondary/30 p-8 flex items-center justify-center overflow-auto min-h-[400px] h-full">
                     <div
                         ref={cardRef}
                         className={cn(
@@ -174,12 +176,12 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
                     </div>
 
                     <div className="p-6 border-t border-border bg-secondary/10 space-y-3">
-                        <Button onClick={handleDownload} className="w-full" disabled={isGenerating}>
-                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                        <Button onClick={handleDownload} className="w-full" disabled={isDownloading || isCopying}>
+                            {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
                             Download Image
                         </Button>
-                        <Button variant="outline" onClick={handleCopy} className="w-full" disabled={isGenerating}>
-                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Copy className="mr-2 h-4 w-4" />}
+                        <Button variant="outline" onClick={handleCopy} className="w-full" disabled={isDownloading || isCopying}>
+                            {isCopying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Copy className="mr-2 h-4 w-4" />}
                             Copy to Clipboard
                         </Button>
                     </div>
