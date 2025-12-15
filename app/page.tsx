@@ -1,46 +1,26 @@
-import type React from "react"
-import { Suspense } from "react"
 import Link from "next/link"
 import { ArrowRight, PenLine } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { QuoteCard } from "@/components/quote-card"
-import { SearchQuotes } from "@/components/search-quotes"
+import { QuotesFeed } from "@/components/quotes-feed"
 import { createClient } from "@/lib/supabase/server"
 
-
-
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string; genre?: string; author?: string }>
-}) {
+export default async function HomePage() {
   const supabase = await createClient()
-  const { q, genre, author } = await searchParams
 
-  let quotes = null
+  let quotes = []
   let quoteOfTheDay = null
 
   if (supabase) {
-    // Build query for quotes
-    let query = supabase.from("quotes").select("*")
+    // Fetch all quotes (limit 1000 for client-side filtering)
+    const { data: fetchedQuotes } = await supabase
+      .from("quotes")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1000)
 
-    if (q) {
-      query = query.or(`text.ilike.%${q}%,author.ilike.%${q}%`)
-    }
-
-    if (genre && genre !== "all") {
-      query = query.eq("genre", genre)
-    }
-
-    if (author) {
-      query = query.ilike("author", `%${author}%`)
-    }
-
-    // Fetch quotes (limit 50 for the feed)
-    const { data: fetchedQuotes } = await query.order("created_at", { ascending: false }).limit(50)
-    quotes = fetchedQuotes
+    quotes = fetchedQuotes || []
 
     // Fetch quote of the day (based on date seed)
     const today = new Date().toISOString().split("T")[0]
@@ -86,9 +66,6 @@ export default async function HomePage({
                 your inbox.
               </p>
               <div className="mx-auto max-w-2xl">
-                <Suspense fallback={<div className="h-12 animate-pulse rounded-lg bg-muted" />}>
-                  <SearchQuotes />
-                </Suspense>
                 <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
                   <Button asChild variant="outline" size="sm" className="bg-transparent text-muted-foreground hover:text-foreground">
                     <Link href="/subscribe">Get Daily Quotes</Link>
@@ -130,38 +107,10 @@ export default async function HomePage({
           </section>
         )}
 
-
-
-        {/* Quotes List */}
+        {/* Quotes Feed (Client Side) */}
         <section id="quotes" className="border-t border-border bg-secondary/20 py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <div className="mb-12 flex items-center justify-between">
-              <div>
-                <h2 className="mb-2 font-serif text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                  {q || (genre && genre !== "all") || author ? "Search Results" : "Latest Quotes"}
-                </h2>
-                <p className="text-muted-foreground">
-                  {q || (genre && genre !== "all") || author
-                    ? `Showing results for ${[q && `"${q}"`, genre !== "all" && genre, author && `author "${author}"`].filter(Boolean).join(", ")}`
-                    : "Handpicked wisdom for you"}
-                </p>
-              </div>
-            </div>
-
-            {quotes && quotes.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {quotes.map((quote) => (
-                  <QuoteCard key={quote.id} quote={quote} />
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 text-center">
-                <p className="text-lg text-muted-foreground">No quotes found matching your criteria.</p>
-                <Button asChild variant="link" className="mt-2">
-                  <Link href="/">Clear filters</Link>
-                </Button>
-              </div>
-            )}
+            <QuotesFeed initialQuotes={quotes} />
           </div>
         </section>
 
