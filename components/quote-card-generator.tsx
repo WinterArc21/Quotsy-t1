@@ -110,16 +110,14 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
                             rounded ? "rounded-3xl" : "rounded-none"
                         )}
                     >
-                        <div className="flex-1 flex items-center justify-center">
+                        <div className="flex-1 flex flex-col items-center justify-center gap-6">
                             <blockquote className={cn("text-center leading-relaxed text-balance", selectedTheme.textClass, ratio === "square" ? "text-2xl md:text-3xl" : "text-xl md:text-2xl")}>
                                 "{quote.text}"
                             </blockquote>
+                            <span className={cn(selectedTheme.authorClass)}>— {quote.author}</span>
                         </div>
 
-                        <div className="mt-8 flex items-end justify-between w-full">
-                            <div className="flex flex-col">
-                                <span className={cn(selectedTheme.authorClass)}>{quote.author}</span>
-                            </div>
+                        <div className="mt-8 flex items-end justify-center w-full">
                             <span className={cn(selectedTheme.brandingClass)}>Quotsy</span>
                         </div>
                     </div>
