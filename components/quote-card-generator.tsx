@@ -18,6 +18,7 @@ interface QuoteCardGeneratorProps {
 }
 
 export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) {
+    const [open, setOpen] = useState(false)
     const [selectedThemeId, setSelectedThemeId] = useState("modern")
     const [ratio, setRatio] = useState<"square" | "portrait">("square")
     const [rounded, setRounded] = useState(true)
@@ -89,7 +90,7 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
     }
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {trigger || (
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -103,7 +104,7 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
                     <div
                         ref={cardRef}
                         className={cn(
-                            "relative flex flex-col justify-between p-8 md:p-12 shadow-2xl transition-all duration-500 ease-in-out",
+                            "relative flex flex-col justify-between p-8 md:p-12 shadow-2xl transition-colors duration-300",
                             selectedTheme.containerClass,
                             ratio === "square" ? "aspect-square w-full max-w-[500px]" : "aspect-[9/16] h-full max-h-[600px]",
                             rounded ? "rounded-3xl" : "rounded-none"

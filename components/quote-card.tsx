@@ -56,7 +56,7 @@ export function QuoteCard({ quote, featured = false }: QuoteCardProps) {
           {quote.author_bio && <p className="mt-1 text-sm text-muted-foreground line-clamp-1">{quote.author_bio}</p>}
         </div>
 
-        <div className="flex items-center gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+        <div className="flex items-center gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100">
           <QuoteCardGenerator quote={quote} />
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copyToClipboard} aria-label="Copy quote">
             {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
