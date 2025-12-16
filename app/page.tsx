@@ -12,6 +12,7 @@ export default async function HomePage() {
 
   let quotes = []
   let quoteOfTheDay = null
+  let totalQuoteCount = 0
 
   if (supabase) {
     // Fetch all quotes (limit 1000 for client-side filtering)
@@ -31,6 +32,8 @@ export default async function HomePage() {
     const { count } = await supabase
       .from("quotes")
       .select("*", { count: "exact", head: true })
+
+    totalQuoteCount = count || 0
 
     // Only fetch quote if database has quotes
     if (count && count > 0) {
@@ -63,7 +66,7 @@ export default async function HomePage() {
                 <div>
                   <div className="inline-flex items-center rounded-full border border-border bg-background/50 px-3 py-1 text-sm text-muted-foreground backdrop-blur-sm mb-6">
                     <span className="flex h-2 w-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-                    1000+ Verified Quotes
+                    {totalQuoteCount > 0 ? `${totalQuoteCount.toLocaleString()}+ Verified Quotes` : "Verified Quotes"}
                   </div>
                   <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground md:text-6xl lg:text-7xl text-balance">
                     Words that inspire, <br className="hidden lg:block" />

@@ -113,7 +113,7 @@ export function AdminDashboard() {
       ) : (
         <div className="space-y-4">
           {quotes.map((quote) => (
-            <QuoteCard
+            <PendingQuoteCard
               key={quote.id}
               quote={quote}
               isLoading={actionLoading === quote.id}
@@ -128,7 +128,7 @@ export function AdminDashboard() {
   )
 }
 
-interface QuoteCardProps {
+interface PendingQuoteCardProps {
   quote: PendingQuote
   isLoading: boolean
   onApprove: (id: number, genre: string) => void
@@ -136,7 +136,7 @@ interface QuoteCardProps {
   onRestore: (id: number) => void
 }
 
-function QuoteCard({ quote, isLoading, onApprove, onReject, onRestore }: QuoteCardProps) {
+function PendingQuoteCard({ quote, isLoading, onApprove, onReject, onRestore }: PendingQuoteCardProps) {
   const [selectedGenre, setSelectedGenre] = useState(quote.genre)
 
   const statusColors = {
