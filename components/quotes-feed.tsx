@@ -1,45 +1,93 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Search, X } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { Search, X, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { QuoteCard } from "@/components/quote-card"
+import { getQuotesAction } from "@/app/actions"
 import { GENRES, type Quote } from "@/lib/types"
 
 interface QuotesFeedProps {
     initialQuotes: Quote[]
 }
 
+const QUOTES_PER_PAGE = 24
+
 export function QuotesFeed({ initialQuotes }: QuotesFeedProps) {
+    const [quotes, setQuotes] = useState<Quote[]>(initialQuotes)
     const [search, setSearch] = useState("")
     const [genre, setGenre] = useState("all")
-    const [author, setAuthor] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
+    const [hasMore, setHasMore] = useState(true)
+    const [total, setTotal] = useState(0)
 
-    const filteredQuotes = useMemo(() => {
-        return initialQuotes.filter((quote) => {
-            const matchesSearch =
-                search === "" ||
-                quote.text.toLowerCase().includes(search.toLowerCase()) ||
-                quote.author.toLowerCase().includes(search.toLowerCase())
+    // Debounced search
+    const [debouncedSearch, setDebouncedSearch] = useState("")
 
-            const matchesGenre = genre === "all" || quote.genre === genre
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search)
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [search])
 
-            const matchesAuthor =
-                author === "" || quote.author.toLowerCase().includes(author.toLowerCase())
-
-            return matchesSearch && matchesGenre && matchesAuthor
+    // Fetch quotes when filters change
+    const fetchQuotes = useCallback(async (resetOffset = true) => {
+        setIsLoading(true)
+        const result = await getQuotesAction({
+            offset: 0,
+            limit: QUOTES_PER_PAGE,
+            genre: genre !== "all" ? genre : undefined,
+            search: debouncedSearch || undefined,
         })
-    }, [initialQuotes, search, genre, author])
+
+        if (result.success) {
+            setQuotes(result.quotes)
+            setHasMore(result.hasMore)
+            setTotal(result.total)
+        }
+        setIsLoading(false)
+    }, [genre, debouncedSearch])
+
+    // Re-fetch when filters change
+    useEffect(() => {
+        // Skip initial render (use server-provided data)
+        if (genre === "all" && debouncedSearch === "") {
+            // Reset to initial state
+            setQuotes(initialQuotes)
+            setHasMore(initialQuotes.length >= QUOTES_PER_PAGE)
+            return
+        }
+        fetchQuotes()
+    }, [genre, debouncedSearch, fetchQuotes, initialQuotes])
+
+    // Load more quotes
+    const loadMore = async () => {
+        setIsLoadingMore(true)
+        const result = await getQuotesAction({
+            offset: quotes.length,
+            limit: QUOTES_PER_PAGE,
+            genre: genre !== "all" ? genre : undefined,
+            search: debouncedSearch || undefined,
+        })
+
+        if (result.success) {
+            setQuotes(prev => [...prev, ...result.quotes])
+            setHasMore(result.hasMore)
+            setTotal(result.total)
+        }
+        setIsLoadingMore(false)
+    }
 
     const clearFilters = () => {
         setSearch("")
         setGenre("all")
-        setAuthor("")
     }
 
-    const hasFilters = search !== "" || genre !== "all" || author !== ""
+    const hasFilters = search !== "" || genre !== "all"
 
     return (
         <div className="space-y-8">
@@ -87,19 +135,48 @@ export function QuotesFeed({ initialQuotes }: QuotesFeedProps) {
                     </h2>
                     <p className="text-muted-foreground">
                         {hasFilters
-                            ? `Showing ${filteredQuotes.length} results`
+                            ? `Showing ${quotes.length} of ${total} results`
                             : "Handpicked wisdom for you"}
                     </p>
                 </div>
             </div>
 
-            {/* Quotes Grid */}
-            {filteredQuotes.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredQuotes.map((quote) => (
-                        <QuoteCard key={quote.id} quote={quote} />
-                    ))}
+            {/* Loading State */}
+            {isLoading ? (
+                <div className="flex items-center justify-center py-20">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
+            ) : quotes.length > 0 ? (
+                <>
+                    {/* Quotes Grid */}
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {quotes.map((quote) => (
+                            <QuoteCard key={quote.id} quote={quote} />
+                        ))}
+                    </div>
+
+                    {/* Load More Button */}
+                    {hasMore && (
+                        <div className="flex justify-center pt-8">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                onClick={loadMore}
+                                disabled={isLoadingMore}
+                                className="h-12 px-8"
+                            >
+                                {isLoadingMore ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Loading...
+                                    </>
+                                ) : (
+                                    "Load More Quotes"
+                                )}
+                            </Button>
+                        </div>
+                    )}
+                </>
             ) : (
                 <div className="py-12 text-center">
                     <p className="text-lg text-muted-foreground">No quotes found matching your criteria.</p>

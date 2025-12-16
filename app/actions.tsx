@@ -351,3 +351,55 @@ export async function getRandomQuoteAction() {
     return { success: false, message: "An unexpected error occurred", data: null }
   }
 }
+
+export async function getQuotesAction(options: {
+  offset?: number
+  limit?: number
+  genre?: string
+  search?: string
+}) {
+  const { offset = 0, limit = 24, genre, search } = options
+
+  try {
+    const supabase = await createClient()
+
+    if (!supabase) {
+      return { success: false, quotes: [], hasMore: false, total: 0 }
+    }
+
+    let query = supabase
+      .from("quotes")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+
+    // Apply genre filter
+    if (genre && genre !== "all") {
+      query = query.eq("genre", genre)
+    }
+
+    // Apply search filter (text or author)
+    if (search && search.trim() !== "") {
+      query = query.or(`text.ilike.%${search}%,author.ilike.%${search}%`)
+    }
+
+    // Apply pagination
+    query = query.range(offset, offset + limit - 1)
+
+    const { data, count, error } = await query
+
+    if (error) {
+      console.error("Failed to fetch quotes:", error)
+      return { success: false, quotes: [], hasMore: false, total: 0 }
+    }
+
+    return {
+      success: true,
+      quotes: data || [],
+      hasMore: (offset + limit) < (count || 0),
+      total: count || 0
+    }
+  } catch (error) {
+    console.error("Unexpected error in getQuotesAction:", error)
+    return { success: false, quotes: [], hasMore: false, total: 0 }
+  }
+}

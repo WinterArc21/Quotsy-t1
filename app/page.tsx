@@ -15,12 +15,12 @@ export default async function HomePage() {
   let totalQuoteCount = 0
 
   if (supabase) {
-    // Fetch all quotes (limit 1000 for client-side filtering)
+    // Fetch initial quotes (24 for fast load, more loaded via pagination)
     const { data: fetchedQuotes } = await supabase
       .from("quotes")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(1000)
+      .limit(24)
 
     quotes = fetchedQuotes || []
 
