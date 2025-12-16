@@ -309,3 +309,30 @@ export async function getPendingQuotesAction(status?: string) {
 
   return { success: true, data: data || [] }
 }
+
+export async function getRandomQuoteAction() {
+  const supabase = await createClient()
+
+  if (!supabase) {
+    return { success: false, message: "Service unavailable", data: null }
+  }
+
+  // Get total count first
+  const { count } = await supabase.from("quotes").select("*", { count: "exact", head: true })
+
+  if (!count) {
+    return { success: false, message: "No quotes found", data: null }
+  }
+
+  // Get random index
+  const index = Math.floor(Math.random() * count)
+
+  // Fetch single quote at index
+  const { data } = await supabase.from("quotes").select("*").range(index, index).single()
+
+  if (!data) {
+    return { success: false, message: "Failed to fetch quote", data: null }
+  }
+
+  return { success: true, data }
+}
