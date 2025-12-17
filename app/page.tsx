@@ -59,7 +59,7 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/50 via-background to-background" />
 
           <div className="container relative mx-auto px-4 py-12 md:py-24 lg:py-32">
-            <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-center">
+            <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-start">
 
               {/* Left Column: Hero Text */}
               <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">

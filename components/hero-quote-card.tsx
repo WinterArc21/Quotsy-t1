@@ -57,7 +57,7 @@ export function HeroQuoteCard({ initialQuote }: HeroQuoteCardProps) {
                         </Button>
                     </div>
 
-                    <div className="group relative overflow-hidden rounded-2xl border border-border/50 bg-background/40 p-8 shadow-2xl backdrop-blur-xl md:p-12">
+                    <div className="group relative overflow-hidden rounded-2xl border border-border/50 bg-background/40 p-8 shadow-2xl backdrop-blur-xl md:p-12 min-h-[280px] md:min-h-[320px]">
                         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                         <blockquote className={`relative z-10 transition-opacity duration-300 ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
