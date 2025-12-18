@@ -20,7 +20,7 @@ interface QuoteCardGeneratorProps {
 export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) {
     const [open, setOpen] = useState(false)
     const [selectedThemeId, setSelectedThemeId] = useState("modern")
-    const [ratio, setRatio] = useState<"square" | "portrait">("square")
+    const [ratio, setRatio] = useState<"square" | "portrait" | "landscape" | "story">("square")
     const [rounded, setRounded] = useState(true)
 
     const [isDownloading, setIsDownloading] = useState(false)
@@ -29,16 +29,43 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
 
     const selectedTheme = THEMES.find((t) => t.id === selectedThemeId) || THEMES[0]
 
+    const RATIO_CONFIGS = {
+        square: {
+            label: "Square",
+            sub: "1:1 • Instagram",
+            class: "aspect-square w-full max-w-[440px]",
+            textClass: "text-2xl md:text-3xl"
+        },
+        portrait: {
+            label: "Portrait",
+            sub: "4:5 • Instagram",
+            class: "aspect-[4/5] w-full max-w-[400px]",
+            textClass: "text-2xl md:text-3xl"
+        },
+        landscape: {
+            label: "Landscape",
+            sub: "1.91:1 • X / FB",
+            class: "aspect-[1.91/1] w-full max-w-[550px]",
+            textClass: "text-xl md:text-2xl"
+        },
+        story: {
+            label: "Story",
+            sub: "9:16 • TikTok / Snap",
+            class: "aspect-[9/16] w-full max-w-[310px]",
+            textClass: "text-xl md:text-2xl"
+        },
+    }
+
+    const currentRatio = RATIO_CONFIGS[ratio]
+
     const generateImage = useCallback(async () => {
         if (!cardRef.current) return null
 
-        // We need to ensure fonts are loaded and layout is stable
-        // html-to-image sometimes needs a little help with specific styles
         const dataUrl = await toPng(cardRef.current, {
             cacheBust: true,
-            pixelRatio: 2, // Higher quality
+            pixelRatio: 2,
             style: {
-                transform: "scale(1)", // Reset any potential transforms
+                transform: "scale(1)",
             },
         })
         return dataUrl
@@ -100,18 +127,18 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
             </DialogTrigger>
             <DialogContent className="max-w-4xl w-full flex flex-col md:flex-row gap-0 p-0 overflow-hidden h-[90vh] md:h-[700px]">
                 {/* Preview Area */}
-                <div className="flex-1 bg-secondary/30 p-8 flex items-center justify-center overflow-auto min-h-[400px] h-full">
+                <div className="flex-1 bg-secondary/30 p-8 flex items-center justify-center overflow-hidden min-h-[400px] h-full">
                     <div
                         ref={cardRef}
                         className={cn(
-                            "relative flex flex-col justify-between p-8 md:p-12 shadow-2xl transition-colors duration-300",
+                            "relative flex flex-col justify-between p-8 md:p-12 shadow-2xl transition-all duration-300",
                             selectedTheme.containerClass,
-                            ratio === "square" ? "aspect-square w-full max-w-[500px]" : "aspect-[9/16] h-full max-h-[600px]",
+                            currentRatio.class,
                             rounded ? "rounded-3xl" : "rounded-none"
                         )}
                     >
                         <div className="flex-1 flex flex-col items-center justify-center gap-6">
-                            <blockquote className={cn("text-center leading-relaxed text-balance", selectedTheme.textClass, ratio === "square" ? "text-2xl md:text-3xl" : "text-xl md:text-2xl")}>
+                            <blockquote className={cn("text-center leading-relaxed text-balance", selectedTheme.textClass, currentRatio.textClass)}>
                                 "{quote.text}"
                             </blockquote>
                             <span className={cn(selectedTheme.authorClass)}>— {quote.author}</span>
@@ -137,9 +164,17 @@ export function QuoteCardGenerator({ quote, trigger }: QuoteCardGeneratorProps) 
                         <div className="space-y-3">
                             <label className="text-sm font-medium text-muted-foreground">Format</label>
                             <Tabs value={ratio} onValueChange={(v) => setRatio(v as any)} className="w-full">
-                                <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="square">Square (1:1)</TabsTrigger>
-                                    <TabsTrigger value="portrait">Story (9:16)</TabsTrigger>
+                                <TabsList className="grid w-full grid-cols-2 h-auto p-1 gap-1">
+                                    {Object.entries(RATIO_CONFIGS).map(([key, config]) => (
+                                        <TabsTrigger
+                                            key={key}
+                                            value={key}
+                                            className="flex flex-col items-center py-2 px-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-full"
+                                        >
+                                            <span className="text-sm font-semibold">{config.label}</span>
+                                            <span className="text-[10px] opacity-70 mt-0.5 leading-none">{config.sub}</span>
+                                        </TabsTrigger>
+                                    ))}
                                 </TabsList>
                             </Tabs>
                         </div>

@@ -119,11 +119,10 @@ export function SubscribeForm() {
           {GENRES.map((genre) => (
             <label
               key={genre}
-              className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 transition-all ${
-                selectedGenres.includes(genre)
+              className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 transition-all ${selectedGenres.includes(genre)
                   ? "border-foreground bg-secondary"
                   : "border-border hover:border-muted-foreground bg-background"
-              }`}
+                }`}
             >
               <Checkbox
                 checked={selectedGenres.includes(genre)}
@@ -144,11 +143,10 @@ export function SubscribeForm() {
 
       {message && (
         <div
-          className={`flex items-center gap-2 rounded-lg p-4 text-sm ${
-            message.type === "success"
+          className={`flex items-center gap-2 rounded-lg p-4 text-sm ${message.type === "success"
               ? "bg-secondary border border-foreground/20 text-foreground"
               : "bg-destructive/10 border border-destructive/20 text-destructive"
-          }`}
+            }`}
         >
           {message.type === "success" && <Check className="h-4 w-4 shrink-0" />}
           {message.text}
