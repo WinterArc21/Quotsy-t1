@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Resend } from "resend"
 import { cookies } from "next/headers"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export async function subscribeAction(formData: FormData) {
   const email = formData.get("email") as string
@@ -11,6 +12,11 @@ export async function subscribeAction(formData: FormData) {
 
   if (!email) {
     return { success: false, message: "Email is required" }
+  }
+
+  const { allowed, message } = await checkRateLimit("subscribe", 5, 3600)
+  if (!allowed) {
+    return { success: false, message: message || "Too many attempts" }
   }
 
   let genres: string[]
@@ -129,6 +135,11 @@ export async function submitQuoteAction(formData: FormData) {
 
   if (!genre) {
     return { success: false, message: "Please select a genre" }
+  }
+
+  const { allowed, message } = await checkRateLimit("submit_quote", 10, 3600)
+  if (!allowed) {
+    return { success: false, message: message || "Too many attempts" }
   }
 
   const supabase = await createClient()
@@ -312,32 +323,22 @@ export async function getPendingQuotesAction(status?: string) {
 
 export async function getRandomQuoteAction() {
   try {
+    const { allowed, message } = await checkRateLimit("get_random_quote", 30, 60)
+    if (!allowed) {
+      return { success: false, message: message || "Too many requests", data: null }
+    }
+
     const supabase = await createClient()
 
     if (!supabase) {
       return { success: false, message: "Service unavailable", data: null }
     }
 
-    // Get total count first
-    const { count, error: countError } = await supabase.from("quotes").select("*", { count: "exact", head: true })
+    // Use RPC for efficient random selection (1 request instead of 2)
+    const { data, error } = await supabase.rpc("get_random_quote").single()
 
-    if (countError) {
-      console.error("Failed to get quote count:", countError)
-      return { success: false, message: "Failed to fetch quotes", data: null }
-    }
-
-    if (!count || count === 0) {
-      return { success: false, message: "No quotes found", data: null }
-    }
-
-    // Get random index
-    const index = Math.floor(Math.random() * count)
-
-    // Fetch single quote at index
-    const { data, error: fetchError } = await supabase.from("quotes").select("*").range(index, index).single()
-
-    if (fetchError) {
-      console.error("Failed to fetch random quote:", fetchError)
+    if (error) {
+      console.error("Failed to fetch random quote:", error)
       return { success: false, message: "Failed to fetch quote", data: null }
     }
 
