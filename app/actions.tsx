@@ -68,7 +68,7 @@ export async function subscribeAction(formData: FormData) {
       const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
 
       const { error: emailError } = await resend.emails.send({
-        from: "Quotsy <onboarding@resend.dev>",
+        from: "Quotsy <hello@quotsy.me>",
         to: [email],
         subject: "Welcome to Quotsy - Your Daily Quote Journey Begins!",
         react: WelcomeEmail({ name, genres, unsubscribeUrl }),
