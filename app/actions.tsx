@@ -64,14 +64,14 @@ export async function subscribeAction(formData: FormData) {
   if (process.env.RESEND_API_KEY) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY)
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quotsy.app"
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quotsy.me"
       const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
 
       const { error: emailError } = await resend.emails.send({
-        from: "Quotsy <hello@quotsy.me>",
+        from: "Quotsy <hello@mail.quotsy.me>",
         to: [email],
         subject: "Welcome to Quotsy - Your Daily Quote Journey Begins!",
-        react: WelcomeEmail({ name, genres, unsubscribeUrl }),
+        react: WelcomeEmail({ name, genres, unsubscribeUrl, baseUrl }),
       })
 
       if (emailError) {

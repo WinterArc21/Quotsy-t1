@@ -14,9 +14,10 @@ interface WelcomeEmailProps {
     name?: string
     genres: string[]
     unsubscribeUrl: string
+    baseUrl: string
 }
 
-export function WelcomeEmail({ name, genres, unsubscribeUrl }: WelcomeEmailProps) {
+export function WelcomeEmail({ name, genres, unsubscribeUrl, baseUrl }: WelcomeEmailProps) {
     return (
         <Html>
             <Head />
@@ -43,7 +44,7 @@ export function WelcomeEmail({ name, genres, unsubscribeUrl }: WelcomeEmailProps
 
                     <Text style={text}>
                         Your first daily quote will arrive tomorrow morning. Until then,
-                        explore our full collection at quotsy.app.
+                        explore our full collection at <Link href={baseUrl} style={link}>{new URL(baseUrl).hostname}</Link>.
                     </Text>
 
                     <Text style={footer}>
