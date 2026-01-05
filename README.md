@@ -1,30 +1,56 @@
 # Quotsy quote app
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
-
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/winter-d1590b00/v0-quotsy-quote-app)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/txZuOK4a9A9)
-
-## Overview
-
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
 
 ## Deployment
 
-Your project is live at:
+Your project is live on Vercel. 
 
-**[https://vercel.com/winter-d1590b00/v0-quotsy-quote-app](https://vercel.com/winter-d1590b00/v0-quotsy-quote-app)**
+Dev link: v0-quotsy-quote-app.vercel.app
+
+Production link: quotsy.me
 
 ## Build your app
 
-Continue building your app on:
 
-**[https://v0.app/chat/txZuOK4a9A9](https://v0.app/chat/txZuOK4a9A9)**
+## Local Development Setup
 
-## How It Works
+> ⚠️ **Important**: This project uses **pnpm** as its package manager. Do not use npm or yarn, as this will create conflicting lock files and cause deployment issues.
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [pnpm](https://pnpm.io/) (v8 or higher)
+
+### 1. Install pnpm (if you don't have it)
+
+```bash
+npm install -g pnpm
+```
+
+### 2. Install dependencies
+
+```bash
+pnpm install
+```
+
+### 3. Set up environment variables
+
+Create a `.env.local` file with the required environment variables (see `.env.example` if available).
+
+### 4. Run the development server
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start the development server |
+| `pnpm build` | Build for production |
+| `pnpm start` | Start the production server |
+| `pnpm lint` | Run ESLint |
+
