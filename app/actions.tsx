@@ -346,7 +346,15 @@ export async function getQuotesAction(options: {
 
     // Apply search filter (text or author)
     if (search && search.trim() !== "") {
-      query = query.or(`text.ilike.%${search}%,author.ilike.%${search}%`)
+      // Escape LIKE wildcards to prevent SQL injection/pattern manipulation
+      const escapeSearchTerm = (term: string): string => {
+        return term
+          .replace(/\\/g, '\\\\')  // Escape backslashes first
+          .replace(/%/g, '\\%')    // Escape LIKE wildcard %
+          .replace(/_/g, '\\_')    // Escape LIKE wildcard _
+      }
+      const safeSearch = escapeSearchTerm(search.trim())
+      query = query.or(`text.ilike.%${safeSearch}%,author.ilike.%${safeSearch}%`)
     }
 
     // Apply pagination
