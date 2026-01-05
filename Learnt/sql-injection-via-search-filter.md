@@ -367,6 +367,35 @@ Future-you will thank present-you for explaining *why* a solution was chosen, no
 
 ---
 
+## How to Test the Fix
+
+You can verify the fix in the browser by searching for special LIKE characters.
+
+### 1. The Wildcard Test (`%`)
+- **Action:** Search for `%` in the search box.
+- **Expected:** Should return 0 results (searching for a literal percent sign).
+- **Vulnerable Behavior:** Would return all quotes in the database.
+
+### 2. The Single Character Test (`_`)
+- **Action:** Search for `_`.
+- **Expected:** Should return 0 results (searching for a literal underscore).
+- **Vulnerable Behavior:** Would match any single character.
+
+### 3. The Pattern Injection Test (`%wisdom%`)
+- **Action:** Search for `%wisdom%`.
+- **Expected:** Should return 0 results.
+- **Vulnerable Behavior:** Would match quotes containing the word "wisdom".
+
+### 4. Normal Search Verification
+- **Action:** Search for a common word like `wisdom` or `life`.
+- **Expected:** Should return relevant quotes normally.
+
+### 5. Verified Special Characters
+- **Search:** `100%`
+- **Expected:** Should only match quotes that literally contain the text "100%", rather than matching all quotes that start with "100".
+
+---
+
 ## Further Reading
 
 - [OWASP SQL Injection Guide](https://owasp.org/www-community/attacks/SQL_Injection)
