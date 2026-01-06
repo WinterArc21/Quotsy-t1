@@ -1,0 +1,2 @@
+{"location":"admin-auth.ts:5","message":"adminLoginAction called","data":{"passwordLength":8,"hasAdminPassword":true,"adminPasswordLength":8,"nodeEnv":"development"},"timestamp":1767719517638,"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}
+{"location":"admin-auth.ts:7","message":"After reading env var","data":{"adminPasswordIsFalsy":false,"adminPasswordType":"string"},"timestamp":1767719517647,"sessionId":"debug-session","runId":"run1","hypothesisId":"B"}
