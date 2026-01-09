@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { submitQuoteSchema } from "@/lib/validation"
 import type { Quote } from "@/lib/types"
 
 /**
@@ -21,19 +22,29 @@ function escapeSearchTerm(term: string): string {
 }
 
 export async function submitQuoteAction(formData: FormData) {
-  const text = formData.get("text") as string
-  const author = (formData.get("author") as string) || "Anonymous"
-  const genre = formData.get("genre") as string
-  const submitterEmail = formData.get("submitterEmail") as string | null
-
-  if (!text || text.trim().length < 10) {
-    return { success: false, message: "Quote must be at least 10 characters long" }
+  // Parse form data into raw object
+  const rawInput = {
+    text: formData.get("text"),
+    author: formData.get("author") || undefined,
+    genre: formData.get("genre"),
+    submitterEmail: formData.get("submitterEmail") || null,
   }
 
-  if (!genre) {
-    return { success: false, message: "Please select a genre" }
+  // Validate with Zod schema
+  const validationResult = submitQuoteSchema.safeParse(rawInput)
+
+  if (!validationResult.success) {
+    // Return the first validation error
+    return {
+      success: false,
+      message: validationResult.error.errors[0].message
+    }
   }
 
+  // Use validated and transformed data
+  const { text, author, genre, submitterEmail } = validationResult.data
+
+  // Check rate limit
   const { allowed, message } = await checkRateLimit("submit_quote", 10, 3600)
   if (!allowed) {
     return { success: false, message: message || "Too many attempts" }
@@ -46,10 +57,10 @@ export async function submitQuoteAction(formData: FormData) {
   }
 
   const { error } = await supabase.from("pending_quotes").insert({
-    text: text.trim(),
-    author: author.trim() || "Anonymous",
+    text,
+    author,
     genre,
-    submitter_email: submitterEmail || null,
+    submitter_email: submitterEmail,
   })
 
   if (error) {

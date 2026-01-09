@@ -1,12 +1,18 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { GENRES } from "@/lib/types"
 import { checkAdminSession } from "./admin-auth"
 
 export async function approveQuoteAction(id: number, genre: string) {
   const isAdmin = await checkAdminSession()
   if (!isAdmin) {
     return { success: false, message: "Unauthorized" }
+  }
+
+  // Validate genre against allowed values
+  if (!GENRES.includes(genre as typeof GENRES[number])) {
+    return { success: false, message: "Invalid genre" }
   }
 
   const supabase = await createClient()
