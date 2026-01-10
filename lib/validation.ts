@@ -45,3 +45,12 @@ export const submitQuoteSchema = z.object({
 })
 
 export type SubmitQuoteInput = z.infer<typeof submitQuoteSchema>
+
+/**
+ * Schema for unsubscribe form
+ */
+export const unsubscribeSchema = z.object({
+    email: z.string().email("Please enter a valid email address"),
+})
+
+export type UnsubscribeInput = z.infer<typeof unsubscribeSchema>

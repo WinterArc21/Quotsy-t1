@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { Resend } from "resend"
 import { checkRateLimit } from "@/lib/rate-limit"
 import { subscribeSchema } from "@/lib/validation"
@@ -32,7 +32,7 @@ export async function subscribeAction(formData: FormData) {
     return { success: false, message: message || "Too many attempts" }
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   if (!supabase) {
     return { success: false, message: "Service unavailable" }
@@ -88,3 +88,55 @@ export async function subscribeAction(formData: FormData) {
   }
 }
 
+export async function unsubscribeAction(formData: FormData) {
+  const { unsubscribeSchema } = await import("@/lib/validation")
+
+  const rawInput = {
+    email: formData.get("email"),
+  }
+
+  const validationResult = unsubscribeSchema.safeParse(rawInput)
+  if (!validationResult.success) {
+    return { success: false, message: validationResult.error.errors[0].message }
+  }
+
+  const { email } = validationResult.data
+
+  const supabase = createAdminClient()
+
+  if (!supabase) {
+    return { success: false, message: "Service unavailable" }
+  }
+
+  // Check if subscriber exists
+  const { data: existing, error: selectError } = await supabase
+    .from("subscribers")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle()
+
+  if (selectError) {
+    console.error("Failed to lookup subscriber:", selectError)
+    return { success: false, message: "Failed to check subscription status." }
+  }
+
+  if (!existing) {
+    return { success: false, message: "This email is not subscribed." }
+  }
+
+  // Delete subscriber
+  const { error } = await supabase
+    .from("subscribers")
+    .delete()
+    .eq("email", email)
+
+  if (error) {
+    console.error("Failed to unsubscribe:", error)
+    return { success: false, message: "Failed to unsubscribe. Please try again." }
+  }
+
+  return {
+    success: true,
+    message: "You have been successfully unsubscribed. We're sorry to see you go!",
+  }
+}

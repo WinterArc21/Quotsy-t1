@@ -19,6 +19,7 @@
 
 # editor/IDE
 .cursor
+.kiro
 
 # debug
 npm-debug.log*
