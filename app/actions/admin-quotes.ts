@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { GENRES } from "@/lib/types"
 import { checkAdminSession } from "./admin-auth"
 
@@ -15,7 +15,7 @@ export async function approveQuoteAction(id: number, genre: string) {
     return { success: false, message: "Invalid genre" }
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   if (!supabase) {
     return { success: false, message: "Service unavailable" }
@@ -63,7 +63,7 @@ export async function rejectQuoteAction(id: number) {
     return { success: false, message: "Unauthorized" }
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   if (!supabase) {
     return { success: false, message: "Service unavailable" }
@@ -87,7 +87,7 @@ export async function restoreQuoteAction(id: number) {
     return { success: false, message: "Unauthorized" }
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   if (!supabase) {
     return { success: false, message: "Service unavailable" }
@@ -108,7 +108,7 @@ export async function getPendingQuotesAction(status?: string) {
     return { success: false, message: "Unauthorized", data: [] }
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   if (!supabase) {
     return { success: false, message: "Service unavailable", data: [] }
