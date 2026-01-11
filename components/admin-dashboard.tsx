@@ -200,6 +200,19 @@ function PendingQuoteCard({ quote, isLoading, onApprove, onReject, onRestore }: 
           </div>
         )}
 
+        {quote.status === "approved" && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+            onClick={() => onRestore(quote.id)}
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RotateCcw className="mr-2 h-4 w-4" />}
+            Revoke Approval
+          </Button>
+        )}
+
         {quote.status === "rejected" && (
           <Button size="sm" variant="outline" onClick={() => onRestore(quote.id)} disabled={isLoading}>
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RotateCcw className="mr-2 h-4 w-4" />}

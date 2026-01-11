@@ -93,7 +93,36 @@ export async function restoreQuoteAction(id: number) {
     return { success: false, message: "Service unavailable" }
   }
 
-  const { error } = await supabase.from("pending_quotes").update({ status: "pending", reviewed_at: null }).eq("id", id)
+  // First, get the pending quote to check its current status
+  const { data: pendingQuote, error: fetchError } = await supabase
+    .from("pending_quotes")
+    .select("*")
+    .eq("id", id)
+    .single()
+
+  if (fetchError || !pendingQuote) {
+    return { success: false, message: "Quote not found" }
+  }
+
+  // If the quote was approved, we need to remove it from the quotes table
+  if (pendingQuote.status === "approved") {
+    const { error: deleteError } = await supabase
+      .from("quotes")
+      .delete()
+      .eq("text", pendingQuote.text)
+      .eq("author", pendingQuote.author)
+
+    if (deleteError) {
+      console.error("Failed to remove quote from quotes table:", deleteError)
+      return { success: false, message: "Failed to revoke quote approval" }
+    }
+  }
+
+  // Update pending quote status back to pending
+  const { error } = await supabase
+    .from("pending_quotes")
+    .update({ status: "pending", reviewed_at: null })
+    .eq("id", id)
 
   if (error) {
     return { success: false, message: "Failed to restore quote" }
