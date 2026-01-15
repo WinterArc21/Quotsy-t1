@@ -61,7 +61,7 @@ export function HeroQuoteCard({ initialQuote }: HeroQuoteCardProps) {
                         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                         <blockquote className={`relative z-10 transition-opacity duration-300 ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
-                            <span className="absolute -left-2 -top-4 font-serif text-6xl text-primary/20">"</span>
+                            <span className="absolute -left-2 -top-4 font-serif text-6xl text-primary/20">“</span>
                             <p className="font-serif text-2xl font-medium leading-relaxed text-foreground md:text-3xl text-balance italic">
                                 {quote.text}
                             </p>

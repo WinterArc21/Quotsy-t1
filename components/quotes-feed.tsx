@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { Search, X, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { QuoteCard } from "@/components/quote-card"
 import { getQuotesAction } from "@/app/actions"
 import { GENRES, type Quote } from "@/lib/types"
+import useSWRInfinite from "swr/infinite"
 
 interface QuotesFeedProps {
     initialQuotes: Quote[]
@@ -15,18 +16,20 @@ interface QuotesFeedProps {
 
 const QUOTES_PER_PAGE = 24
 
+// Wrapper for the server action to work with SWR
+const fetcher = async (key: { offset: number; limit: number; genre?: string; search?: string }) => {
+    const { offset, limit, genre, search } = key
+    const result = await getQuotesAction({ offset, limit, genre, search })
+    if (!result.success) throw new Error("Failed to fetch quotes")
+    return result
+}
+
 export function QuotesFeed({ initialQuotes }: QuotesFeedProps) {
-    const [quotes, setQuotes] = useState<Quote[]>(initialQuotes)
     const [search, setSearch] = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
     const [genre, setGenre] = useState("all")
-    const [isLoading, setIsLoading] = useState(false)
-    const [isLoadingMore, setIsLoadingMore] = useState(false)
-    const [hasMore, setHasMore] = useState(true)
-    const [total, setTotal] = useState(0)
 
     // Debounced search
-    const [debouncedSearch, setDebouncedSearch] = useState("")
-
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(search)
@@ -34,52 +37,46 @@ export function QuotesFeed({ initialQuotes }: QuotesFeedProps) {
         return () => clearTimeout(timer)
     }, [search])
 
-    // Fetch quotes when filters change
-    const fetchQuotes = useCallback(async (resetOffset = true) => {
-        setIsLoading(true)
-        const result = await getQuotesAction({
-            offset: 0,
+    const getKey = (pageIndex: number, previousPageData: any) => {
+        // Reached the end
+        if (previousPageData && !previousPageData.hasMore) return null
+
+        // Return the key/arguments for this page
+        return {
+            offset: pageIndex * QUOTES_PER_PAGE,
             limit: QUOTES_PER_PAGE,
             genre: genre !== "all" ? genre : undefined,
             search: debouncedSearch || undefined,
-        })
-
-        if (result.success) {
-            setQuotes(result.quotes)
-            setHasMore(result.hasMore)
-            setTotal(result.total)
         }
-        setIsLoading(false)
-    }, [genre, debouncedSearch])
+    }
 
-    // Re-fetch when filters change
-    useEffect(() => {
-        // Skip initial render (use server-provided data)
-        if (genre === "all" && debouncedSearch === "") {
-            // Reset to initial state
-            setQuotes(initialQuotes)
-            setHasMore(initialQuotes.length >= QUOTES_PER_PAGE)
-            return
+    const { data, size, setSize, isLoading, isValidating } = useSWRInfinite(
+        getKey,
+        fetcher,
+        {
+            fallbackData: [{
+                success: true,
+                quotes: initialQuotes,
+                hasMore: initialQuotes.length >= QUOTES_PER_PAGE,
+                total: 0 // We don't have this initially, but it updates on first fetch/revalidate
+            }],
+            revalidateFirstPage: false,
+            revalidateOnFocus: false, // Performance: don't revalidate on window focus for this feed
         }
-        fetchQuotes()
-    }, [genre, debouncedSearch, fetchQuotes, initialQuotes])
+    )
 
-    // Load more quotes
-    const loadMore = async () => {
-        setIsLoadingMore(true)
-        const result = await getQuotesAction({
-            offset: quotes.length,
-            limit: QUOTES_PER_PAGE,
-            genre: genre !== "all" ? genre : undefined,
-            search: debouncedSearch || undefined,
-        })
+    // Derived state from SWR data
+    const quotes = data ? data.flatMap(page => page.quotes) : []
+    const hasMore = data ? data[data.length - 1]?.hasMore : false
+    const total = data ? data[data.length - 1]?.total : 0
 
-        if (result.success) {
-            setQuotes(prev => [...prev, ...result.quotes])
-            setHasMore(result.hasMore)
-            setTotal(result.total)
-        }
-        setIsLoadingMore(false)
+    // Loading states
+    const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === "undefined")
+    const isRefreshing = isValidating && data && data.length === size
+    const isEmpty = !isLoading && quotes.length === 0
+
+    const loadMore = () => {
+        setSize(size + 1)
     }
 
     const clearFilters = () => {
@@ -134,15 +131,18 @@ export function QuotesFeed({ initialQuotes }: QuotesFeedProps) {
                         {hasFilters ? "Search Results" : "Latest Quotes"}
                     </h2>
                     <p className="text-muted-foreground">
-                        {hasFilters
+                        {hasFilters && total > 0
                             ? `Showing ${quotes.length} of ${total} results`
                             : "Handpicked wisdom for you"}
                     </p>
                 </div>
+                {isRefreshing && !isLoading && (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                )}
             </div>
 
-            {/* Loading State */}
-            {isLoading ? (
+            {/* Content */}
+            {isLoading && quotes.length === 0 ? (
                 <div className="flex items-center justify-center py-20">
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
