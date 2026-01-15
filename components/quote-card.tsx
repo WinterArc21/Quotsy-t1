@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Copy, Check, Share2 } from "lucide-react"
+import Link from "next/link"
+import { Copy, Check, Share2, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { QuoteCardGenerator } from "@/components/quote-card-generator"
 import type { Quote } from "@/lib/types"
 
 interface QuoteCardProps {
@@ -57,7 +57,11 @@ export function QuoteCard({ quote, featured = false }: QuoteCardProps) {
         </div>
 
         <div className="flex items-center gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100">
-          <QuoteCardGenerator quote={quote} />
+          <Button variant="ghost" size="icon" className="h-8 w-8" asChild aria-label="Create card">
+            <Link href={`/create-card/${quote.id}`}>
+              <ImageIcon className="h-4 w-4" />
+            </Link>
+          </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copyToClipboard} aria-label="Copy quote">
             {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
           </Button>
