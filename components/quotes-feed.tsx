@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { QuoteCard } from "@/components/quote-card"
-import { getQuotesAction } from "@/app/actions"
+import { getQuotesAction } from "@/app/actions/quotes"
 import { GENRES, type Quote } from "@/lib/types"
 import useSWRInfinite from "swr/infinite"
 

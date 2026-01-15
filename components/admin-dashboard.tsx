@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { GENRES, type PendingQuote } from "@/lib/types"
-import { getPendingQuotesAction, approveQuoteAction, rejectQuoteAction, restoreQuoteAction } from "@/app/actions"
+import { getPendingQuotesAction, approveQuoteAction, rejectQuoteAction, restoreQuoteAction } from "@/app/actions/admin-quotes"
 import { Check, X, RotateCcw, Loader2, Quote, Clock, CheckCircle, XCircle } from "lucide-react"
 
 export function AdminDashboard() {

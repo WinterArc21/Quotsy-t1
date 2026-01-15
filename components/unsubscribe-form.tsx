@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { unsubscribeAction } from "@/app/actions"
+import { unsubscribeAction } from "@/app/actions/subscriptions"
 import { Check, Loader2, AlertCircle } from "lucide-react"
 import Link from "next/link"
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { AdminLogin } from "@/components/admin-login"
 import { AdminDashboard } from "@/components/admin-dashboard"
-import { checkAdminSession, adminLogoutAction } from "@/app/actions"
+import { checkAdminSession, adminLogoutAction } from "@/app/actions/admin-auth"
 import { Button } from "@/components/ui/button"
 import { LogOut, Loader2 } from "lucide-react"
 

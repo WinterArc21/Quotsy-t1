@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getRandomQuoteAction } from "@/app/actions"
+import { getRandomQuoteAction } from "@/app/actions/quotes"
 import type { Quote } from "@/lib/types"
 
 interface HeroQuoteCardProps {

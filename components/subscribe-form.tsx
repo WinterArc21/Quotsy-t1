@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { GENRES, type Genre } from "@/lib/types"
-import { subscribeAction } from "@/app/actions"
+import { subscribeAction } from "@/app/actions/subscriptions"
 import { Check, Loader2 } from "lucide-react"
 
 export function SubscribeForm() {
