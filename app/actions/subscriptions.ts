@@ -39,14 +39,37 @@ export async function subscribeAction(formData: FormData) {
   }
 
   // Check if already subscribed
-  const { data: existing } = await supabase.from("subscribers").select("id").eq("email", email).maybeSingle()
+  const { data: existing } = await supabase.from("subscribers").select("id, genres").eq("email", email).maybeSingle()
 
   if (existing) {
+    // Check if genres actually changed
+    const oldGenres = (existing.genres as string[]) || []
+    const genresChanged = oldGenres.length !== genres.length || !oldGenres.every((g) => genres.includes(g))
+
     // Update existing subscription
     const { error } = await supabase.from("subscribers").update({ name, genres, verified: true }).eq("email", email)
 
     if (error) {
       return { success: false, message: "Failed to update subscription" }
+    }
+
+    // Send genre update email if genres changed
+    if (genresChanged && process.env.RESEND_API_KEY) {
+      try {
+        const { GenreUpdateEmail } = await import("@/emails/GenreUpdate")
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quotsy.me"
+        const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
+
+        await resend.emails.send({
+          from: "Quotsy <hello@mail.quotsy.me>",
+          to: [email],
+          subject: "Your Quotsy Preferences Have Been Updated",
+          react: GenreUpdateEmail({ name, genres, unsubscribeUrl, baseUrl }),
+        })
+      } catch (emailError) {
+        console.error("Failed to send genre update email:", emailError)
+      }
     }
 
     return { success: true, message: "Your subscription has been updated!" }
