@@ -101,7 +101,12 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-8 md:flex-row">
           <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Quotsy. All rights reserved.</p>
-          <p className="text-sm text-muted-foreground">Crafted with care for seekers of wisdom.</p>
+          <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
+            <Link href="/disclaimer" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
+              Disclaimer
+            </Link>
+            <p className="text-sm text-muted-foreground">Crafted with care for seekers of wisdom.</p>
+          </div>
         </div>
       </div>
     </footer>

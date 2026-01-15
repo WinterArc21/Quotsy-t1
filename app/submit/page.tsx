@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { SubmitQuoteForm } from "@/components/submit-quote-form"
@@ -80,9 +81,16 @@ export default function SubmitPage() {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-border">
+                  <div className="mt-8 pt-6 border-t border-border space-y-3">
                     <p className="text-xs text-muted-foreground text-center">
                       All submissions are reviewed by our team within 24-48 hours.
+                    </p>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Please ensure accurate attribution. See our{" "}
+                      <Link href="/disclaimer" className="underline hover:text-foreground transition-colors">
+                        disclaimer
+                      </Link>{" "}
+                      for more information.
                     </p>
                   </div>
                 </div>
