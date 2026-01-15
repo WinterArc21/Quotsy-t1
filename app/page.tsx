@@ -5,10 +5,15 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { QuotesFeed } from "@/components/quotes-feed"
 import { HeroQuoteCard } from "@/components/hero-quote-card"
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/static"
+
+// ISR: Regenerate page every 60 seconds for near-instant navigation
+// while keeping data reasonably fresh (quotes don't change often)
+export const revalidate = 60
 
 export default async function HomePage() {
-  const supabase = await createClient()
+  // Use static client (no cookies) to enable ISR caching
+  const supabase = createStaticClient()
 
   let quotes = []
   let quoteOfTheDay = null

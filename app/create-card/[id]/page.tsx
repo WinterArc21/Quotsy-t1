@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { CardGenerator } from "@/components/card-generator"
-import { Button } from "@/components/ui/button"
+import { BackButton } from "@/components/back-button"
 import type { Quote } from "@/lib/types"
 
 export const metadata = {
@@ -54,12 +53,7 @@ export default async function CreateCardPage({ params }: CreateCardPageProps) {
       {/* Compact Header */}
       <header className="shrink-0 z-50 w-full border-b border-border/40 bg-background">
         <div className="container mx-auto flex h-14 items-center justify-between px-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/#quotes">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Link>
-          </Button>
+          <BackButton />
           <h1 className="font-serif text-lg font-bold tracking-tight">Create Card</h1>
           <Link href="/" className="flex items-center gap-2">
             <span className="font-serif text-lg font-bold tracking-tight text-muted-foreground">Quotsy</span>
