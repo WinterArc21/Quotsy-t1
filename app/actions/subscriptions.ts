@@ -1,5 +1,6 @@
 "use server"
 
+import { after } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { Resend } from "resend"
 import { checkRateLimit } from "@/lib/rate-limit"
@@ -53,23 +54,25 @@ export async function subscribeAction(formData: FormData) {
       return { success: false, message: "Failed to update subscription" }
     }
 
-    // Send genre update email if genres changed
+    // Send genre update email after response (non-blocking)
     if (genresChanged && process.env.RESEND_API_KEY) {
-      try {
-        const { GenreUpdateEmail } = await import("@/emails/GenreUpdate")
-        const resend = new Resend(process.env.RESEND_API_KEY)
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quotsy.me"
-        const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
+      after(async () => {
+        try {
+          const { GenreUpdateEmail } = await import("@/emails/GenreUpdate")
+          const resend = new Resend(process.env.RESEND_API_KEY!)
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quotsy.me"
+          const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
 
-        await resend.emails.send({
-          from: "Quotsy <hello@mail.quotsy.me>",
-          to: [email],
-          subject: "Your Quotsy Preferences Have Been Updated",
-          react: GenreUpdateEmail({ name, genres, unsubscribeUrl, baseUrl }),
-        })
-      } catch (emailError) {
-        console.error("Failed to send genre update email:", emailError)
-      }
+          await resend.emails.send({
+            from: "Quotsy <hello@mail.quotsy.me>",
+            to: [email],
+            subject: "Your Quotsy Preferences Have Been Updated",
+            react: GenreUpdateEmail({ name, genres, unsubscribeUrl, baseUrl }),
+          })
+        } catch (emailError) {
+          console.error("Failed to send genre update email:", emailError)
+        }
+      })
     }
 
     return { success: true, message: "Your subscription has been updated!" }
@@ -82,27 +85,24 @@ export async function subscribeAction(formData: FormData) {
     return { success: false, message: "Failed to subscribe. Please try again." }
   }
 
-  // Send welcome email
+  // Send welcome email after response (non-blocking)
   if (process.env.RESEND_API_KEY) {
-    try {
-      const resend = new Resend(process.env.RESEND_API_KEY)
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quotsy.me"
-      const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
+    after(async () => {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY!)
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quotsy.me"
+        const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
 
-      const { error: emailError } = await resend.emails.send({
-        from: "Quotsy <hello@mail.quotsy.me>",
-        to: [email],
-        subject: "Welcome to Quotsy - Your Daily Quote Journey Begins!",
-        react: WelcomeEmail({ name, genres, unsubscribeUrl, baseUrl }),
-      })
-
-      if (emailError) {
+        await resend.emails.send({
+          from: "Quotsy <hello@mail.quotsy.me>",
+          to: [email],
+          subject: "Welcome to Quotsy - Your Daily Quote Journey Begins!",
+          react: WelcomeEmail({ name, genres, unsubscribeUrl, baseUrl }),
+        })
+      } catch (emailError) {
         console.error("Failed to send welcome email:", emailError)
       }
-    } catch (emailError) {
-      // Log error but don't fail the subscription
-      console.error("Failed to send welcome email:", emailError)
-    }
+    })
   }
 
   return {
