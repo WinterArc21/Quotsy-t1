@@ -26,7 +26,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="default" size="sm" className="hidden sm:inline-flex">
+          <Button asChild variant="default" size="sm" className="hidden md:inline-flex">
             <Link href="/subscribe">Get Daily Quotes</Link>
           </Button>
           <MobileNav />
