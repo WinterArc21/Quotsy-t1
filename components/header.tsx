@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { MobileNav } from "@/components/mobile-nav"
 
 export function Header() {
   return (
@@ -10,7 +11,6 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-
           <Link
             href="/submit"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -25,10 +25,11 @@ export function Header() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-4">
-          <Button asChild variant="default" size="sm">
+        <div className="flex items-center gap-2">
+          <Button asChild variant="default" size="sm" className="hidden sm:inline-flex">
             <Link href="/subscribe">Get Daily Quotes</Link>
           </Button>
+          <MobileNav />
         </div>
       </div>
     </header>
