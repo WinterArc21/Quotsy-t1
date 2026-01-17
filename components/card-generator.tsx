@@ -105,7 +105,7 @@ export function CardGenerator({ quote }: CardGeneratorProps) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-10rem)] gap-6">
+    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-10rem)] gap-6 pb-6 lg:pb-0">
       {/* Preview Area - Left side on desktop */}
       <div className="flex-1 flex items-center justify-center rounded-2xl border border-border bg-secondary/20 p-4 md:p-8 min-h-[400px] lg:min-h-0">
         <div
@@ -212,9 +212,9 @@ export function CardGenerator({ quote }: CardGeneratorProps) {
 
         {/* Action Buttons - Fixed at bottom */}
         <div className="p-5 border-t border-border bg-secondary/5 space-y-2">
-          <Button 
-            onClick={handleDownload} 
-            className="w-full h-11" 
+          <Button
+            onClick={handleDownload}
+            className="w-full h-11"
             disabled={isDownloading || isCopying}
           >
             {isDownloading ? (

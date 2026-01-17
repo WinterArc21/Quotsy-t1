@@ -49,7 +49,7 @@ export default async function CreateCardPage({ params }: CreateCardPageProps) {
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Compact Header */}
       <header className="shrink-0 z-50 w-full border-b border-border/40 bg-background">
         <div className="container mx-auto flex h-14 items-center justify-between px-4">
@@ -62,7 +62,7 @@ export default async function CreateCardPage({ params }: CreateCardPageProps) {
       </header>
 
       {/* Main Content - Full height */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 lg:overflow-hidden">
         <div className="h-full container mx-auto px-4 py-4 lg:py-6">
           <CardGenerator quote={quote} />
         </div>
