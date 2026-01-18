@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers"
 import { createAdminToken, verifyAdminToken } from "@/lib/jwt"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 /**
  * Admin Login Action
@@ -9,6 +10,7 @@ import { createAdminToken, verifyAdminToken } from "@/lib/jwt"
  * Authenticates the admin using a password and creates a signed JWT session.
  * 
  * Security features:
+ * - Rate limiting (5 attempts per hour per IP)
  * - Password comparison (should ideally use timing-safe comparison)
  * - JWT token with HS256 signature
  * - HttpOnly cookie (not accessible via JavaScript)
@@ -16,6 +18,12 @@ import { createAdminToken, verifyAdminToken } from "@/lib/jwt"
  * - SameSite=strict (prevents CSRF)
  */
 export async function adminLoginAction(password: string) {
+  // Rate limit to 5 attempts per hour to prevent brute-force attacks
+  const { allowed, message } = await checkRateLimit("admin_login", 5, 3600)
+  if (!allowed) {
+    return { success: false, message: message || "Too many login attempts. Please try again later." }
+  }
+
   const adminPassword = process.env.ADMIN_PASSWORD
 
   if (!adminPassword) {

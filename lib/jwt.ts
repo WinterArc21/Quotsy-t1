@@ -1,3 +1,4 @@
+import "server-only"
 import { SignJWT, jwtVerify, type JWTPayload } from "jose"
 
 /**
@@ -26,15 +27,15 @@ interface AdminSessionPayload extends JWTPayload {
  */
 function getSecretKey(): Uint8Array {
   const secret = process.env.ADMIN_JWT_SECRET
-  
+
   if (!secret) {
     throw new Error("ADMIN_JWT_SECRET environment variable is not set")
   }
-  
+
   if (secret.length < 32) {
     throw new Error("ADMIN_JWT_SECRET must be at least 32 characters long")
   }
-  
+
   return new TextEncoder().encode(secret)
 }
 
@@ -51,13 +52,13 @@ function getSecretKey(): Uint8Array {
  */
 export async function createAdminToken(expiresIn: string = "24h"): Promise<string> {
   const secret = getSecretKey()
-  
+
   const token = await new SignJWT({ role: "admin" as const })
     .setProtectedHeader({ alg: "HS256" }) // HMAC with SHA-256
     .setIssuedAt()                         // Current timestamp
     .setExpirationTime(expiresIn)          // Expiration time
     .sign(secret)
-  
+
   return token
 }
 
@@ -75,16 +76,16 @@ export async function createAdminToken(expiresIn: string = "24h"): Promise<strin
 export async function verifyAdminToken(token: string): Promise<AdminSessionPayload | null> {
   try {
     const secret = getSecretKey()
-    
+
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ["HS256"], // Only accept HS256 to prevent algorithm confusion attacks
     })
-    
+
     // Validate the payload has the expected shape
     if (payload.role !== "admin") {
       return null
     }
-    
+
     return payload as AdminSessionPayload
   } catch (error) {
     // Token is invalid, expired, or tampered with
