@@ -32,6 +32,11 @@ export async function approveQuoteAction(id: number, genre: string) {
     return { success: false, message: "Quote not found" }
   }
 
+  // Prevent double-approval (could happen if admin opens quote in multiple tabs)
+  if (pendingQuote.status === "approved") {
+    return { success: false, message: "This quote has already been approved" }
+  }
+
   // Insert into quotes table
   const { error: insertError } = await supabase.from("quotes").insert({
     text: pendingQuote.text,
