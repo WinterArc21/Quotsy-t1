@@ -3,21 +3,25 @@
 import { createAdminClient } from "@/lib/supabase/admin"
 import { GENRES } from "@/lib/types"
 import { checkAdminSession } from "./admin-auth"
+import { logError, logInfo, logWarn } from "@/lib/logger"
 
 export async function approveQuoteAction(id: number, genre: string) {
   const isAdmin = await checkAdminSession()
   if (!isAdmin) {
+    logWarn("Unauthorized quote approval attempt", { quoteId: id })
     return { success: false, message: "Unauthorized" }
   }
 
   // Validate genre against allowed values
   if (!GENRES.includes(genre as typeof GENRES[number])) {
+    logWarn("Invalid genre for quote approval", { quoteId: id, genre })
     return { success: false, message: "Invalid genre" }
   }
 
   const supabase = createAdminClient()
 
   if (!supabase) {
+    logError("Supabase admin client unavailable for quote approval")
     return { success: false, message: "Service unavailable" }
   }
 
@@ -29,11 +33,13 @@ export async function approveQuoteAction(id: number, genre: string) {
     .single()
 
   if (fetchError || !pendingQuote) {
+    logWarn("Pending quote not found for approval", { quoteId: id })
     return { success: false, message: "Quote not found" }
   }
 
   // Prevent double-approval (could happen if admin opens quote in multiple tabs)
   if (pendingQuote.status === "approved") {
+    logWarn("Quote already approved", { quoteId: id })
     return { success: false, message: "This quote has already been approved" }
   }
 
@@ -45,7 +51,7 @@ export async function approveQuoteAction(id: number, genre: string) {
   })
 
   if (insertError) {
-    console.error("Failed to approve quote:", insertError)
+    logError("Failed to approve quote", { error: insertError, quoteId: id, genre })
     return { success: false, message: "Failed to approve quote" }
   }
 
@@ -56,21 +62,24 @@ export async function approveQuoteAction(id: number, genre: string) {
     .eq("id", id)
 
   if (updateError) {
-    console.error("Failed to update pending quote status:", updateError)
+    logError("Failed to update pending quote status", { error: updateError, quoteId: id, genre })
   }
 
+  logInfo("Quote approved", { quoteId: id, genre })
   return { success: true, message: "Quote approved and added to collection!" }
 }
 
 export async function rejectQuoteAction(id: number) {
   const isAdmin = await checkAdminSession()
   if (!isAdmin) {
+    logWarn("Unauthorized quote rejection attempt", { quoteId: id })
     return { success: false, message: "Unauthorized" }
   }
 
   const supabase = createAdminClient()
 
   if (!supabase) {
+    logError("Supabase admin client unavailable for quote rejection")
     return { success: false, message: "Service unavailable" }
   }
 
@@ -80,21 +89,25 @@ export async function rejectQuoteAction(id: number) {
     .eq("id", id)
 
   if (error) {
+    logError("Failed to reject quote", { error, quoteId: id })
     return { success: false, message: "Failed to reject quote" }
   }
 
+  logInfo("Quote rejected", { quoteId: id })
   return { success: true, message: "Quote rejected" }
 }
 
 export async function restoreQuoteAction(id: number) {
   const isAdmin = await checkAdminSession()
   if (!isAdmin) {
+    logWarn("Unauthorized quote restore attempt", { quoteId: id })
     return { success: false, message: "Unauthorized" }
   }
 
   const supabase = createAdminClient()
 
   if (!supabase) {
+    logError("Supabase admin client unavailable for quote restore")
     return { success: false, message: "Service unavailable" }
   }
 
@@ -106,6 +119,7 @@ export async function restoreQuoteAction(id: number) {
     .single()
 
   if (fetchError || !pendingQuote) {
+    logWarn("Pending quote not found for restore", { quoteId: id })
     return { success: false, message: "Quote not found" }
   }
 
@@ -118,7 +132,7 @@ export async function restoreQuoteAction(id: number) {
       .eq("author", pendingQuote.author)
 
     if (deleteError) {
-      console.error("Failed to remove quote from quotes table:", deleteError)
+      logError("Failed to remove quote from quotes table", { error: deleteError, quoteId: id })
       return { success: false, message: "Failed to revoke quote approval" }
     }
   }
@@ -130,21 +144,25 @@ export async function restoreQuoteAction(id: number) {
     .eq("id", id)
 
   if (error) {
+    logError("Failed to restore quote", { error, quoteId: id })
     return { success: false, message: "Failed to restore quote" }
   }
 
+  logInfo("Quote restored to pending", { quoteId: id })
   return { success: true, message: "Quote restored to pending" }
 }
 
 export async function getPendingQuotesAction(status?: string) {
   const isAdmin = await checkAdminSession()
   if (!isAdmin) {
+    logWarn("Unauthorized pending quotes fetch")
     return { success: false, message: "Unauthorized", data: [] }
   }
 
   const supabase = createAdminClient()
 
   if (!supabase) {
+    logError("Supabase admin client unavailable for pending quotes fetch")
     return { success: false, message: "Service unavailable", data: [] }
   }
 
@@ -157,6 +175,7 @@ export async function getPendingQuotesAction(status?: string) {
   const { data, error } = await query
 
   if (error) {
+    logError("Failed to fetch pending quotes", { error, status })
     return { success: false, message: "Failed to fetch quotes", data: [] }
   }
 

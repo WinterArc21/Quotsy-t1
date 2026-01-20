@@ -3,6 +3,7 @@
 import { cookies } from "next/headers"
 import { createAdminToken, verifyAdminToken } from "@/lib/jwt"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { logError, logInfo, logWarn } from "@/lib/logger"
 
 /**
  * Admin Login Action
@@ -21,17 +22,20 @@ export async function adminLoginAction(password: string) {
   // Rate limit to 5 attempts per hour to prevent brute-force attacks
   const { allowed, message } = await checkRateLimit("admin_login", 5, 3600)
   if (!allowed) {
+    logWarn("Rate limit blocked admin login", { action: "admin_login" })
     return { success: false, message: message || "Too many login attempts. Please try again later." }
   }
 
   const adminPassword = process.env.ADMIN_PASSWORD
 
   if (!adminPassword) {
+    logError("Admin password not configured")
     return { success: false, message: "Admin access not configured" }
   }
 
   // Note: In production with multiple admins, use bcrypt for password hashing
   if (password !== adminPassword) {
+    logWarn("Admin login failed: invalid password")
     return { success: false, message: "Invalid password" }
   }
 
@@ -49,9 +53,10 @@ export async function adminLoginAction(password: string) {
       path: "/",                                    // Available on all paths
     })
 
+    logInfo("Admin login successful")
     return { success: true, message: "Welcome, admin!" }
   } catch (error) {
-    console.error("Failed to create admin session:", error)
+    logError("Failed to create admin session", { error })
     return { success: false, message: "Authentication failed. Please try again." }
   }
 }
@@ -66,6 +71,7 @@ export async function adminLoginAction(password: string) {
 export async function adminLogoutAction() {
   const cookieStore = await cookies()
   cookieStore.delete("admin_session")
+  logInfo("Admin logged out")
   return { success: true }
 }
 

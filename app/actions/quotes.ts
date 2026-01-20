@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { checkRateLimit } from "@/lib/rate-limit"
 import { submitQuoteSchema } from "@/lib/validation"
 import type { Quote } from "@/lib/types"
+import { logError, logInfo, logWarn } from "@/lib/logger"
 
 /**
  * Escapes special characters for safe use in PostgREST ILIKE filters.
@@ -47,12 +48,14 @@ export async function submitQuoteAction(formData: FormData) {
   // Check rate limit
   const { allowed, message } = await checkRateLimit("submit_quote", 10, 3600)
   if (!allowed) {
+    logWarn("Rate limit blocked quote submission", { action: "submit_quote" })
     return { success: false, message: message || "Too many attempts" }
   }
 
   const supabase = await createClient()
 
   if (!supabase) {
+    logError("Supabase client unavailable for quote submission")
     return { success: false, message: "Service unavailable" }
   }
 
@@ -64,10 +67,11 @@ export async function submitQuoteAction(formData: FormData) {
   })
 
   if (error) {
-    console.error("Failed to submit quote:", error)
+    logError("Failed to submit quote", { error, genre, hasAuthor: Boolean(author), hasSubmitterEmail: Boolean(submitterEmail) })
     return { success: false, message: "Failed to submit quote. Please try again." }
   }
 
+  logInfo("Quote submitted for review", { genre, hasAuthor: Boolean(author), hasSubmitterEmail: Boolean(submitterEmail) })
   return {
     success: true,
     message: "Thank you! Your quote has been submitted for review.",
@@ -78,12 +82,14 @@ export async function getRandomQuoteAction(): Promise<{ success: true; data: Quo
   try {
     const { allowed, message } = await checkRateLimit("get_random_quote", 30, 60)
     if (!allowed) {
+      logWarn("Rate limit blocked random quote", { action: "get_random_quote" })
       return { success: false, message: message || "Too many requests", data: null }
     }
 
     const supabase = await createClient()
 
     if (!supabase) {
+      logError("Supabase client unavailable for random quote")
       return { success: false, message: "Service unavailable", data: null }
     }
 
@@ -91,7 +97,7 @@ export async function getRandomQuoteAction(): Promise<{ success: true; data: Quo
     const { data, error } = await supabase.rpc("get_random_quote").single()
 
     if (error) {
-      console.error("Failed to fetch random quote:", error)
+      logError("Failed to fetch random quote", { error })
       return { success: false, message: "Failed to fetch quote", data: null }
     }
 
@@ -102,7 +108,7 @@ export async function getRandomQuoteAction(): Promise<{ success: true; data: Quo
     // Type assertion: RPC returns Quote type
     return { success: true, data: data as Quote }
   } catch (error) {
-    console.error("Unexpected error in getRandomQuoteAction:", error)
+    logError("Unexpected error in getRandomQuoteAction", { error })
     return { success: false, message: "An unexpected error occurred", data: null }
   }
 }
@@ -119,6 +125,7 @@ export async function getQuotesAction(options: {
     const supabase = await createClient()
 
     if (!supabase) {
+      logError("Supabase client unavailable for quotes fetch")
       return { success: false, quotes: [], hasMore: false, total: 0 }
     }
 
@@ -145,7 +152,7 @@ export async function getQuotesAction(options: {
     const { data, count, error } = await query
 
     if (error) {
-      console.error("Failed to fetch quotes:", error)
+      logError("Failed to fetch quotes", { error, offset, limit, genre, hasSearch: Boolean(search?.trim()) })
       return { success: false, quotes: [], hasMore: false, total: 0 }
     }
 
@@ -156,7 +163,7 @@ export async function getQuotesAction(options: {
       total: count || 0
     }
   } catch (error) {
-    console.error("Unexpected error in getQuotesAction:", error)
+    logError("Unexpected error in getQuotesAction", { error, offset, limit, genre, hasSearch: Boolean(search?.trim()) })
     return { success: false, quotes: [], hasMore: false, total: 0 }
   }
 }

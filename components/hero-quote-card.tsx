@@ -5,6 +5,7 @@ import { RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getRandomQuoteAction } from "@/app/actions/quotes"
 import type { Quote } from "@/lib/types"
+import { logError } from "@/lib/logger"
 
 interface HeroQuoteCardProps {
     initialQuote: Quote | null
@@ -22,7 +23,7 @@ export function HeroQuoteCard({ initialQuote }: HeroQuoteCardProps) {
                 setQuote(data)
             }
         } catch (error) {
-            console.error("Failed to refresh quote:", error)
+            logError("Failed to refresh quote", { error })
         } finally {
             setIsRefreshing(false)
         }

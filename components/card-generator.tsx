@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { THEMES } from "@/lib/themes"
 import type { Quote } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { logError } from "@/lib/logger"
 
 interface CardGeneratorProps {
   quote: Quote
@@ -72,7 +73,7 @@ export function CardGenerator({ quote }: CardGeneratorProps) {
       link.click()
       toast.success("Card downloaded successfully")
     } catch (error) {
-      console.error(error)
+      logError("Failed to download quote card", { error })
       toast.error("Failed to download card")
     } finally {
       setIsDownloading(false)
@@ -97,7 +98,7 @@ export function CardGenerator({ quote }: CardGeneratorProps) {
       ])
       toast.success("Card copied to clipboard")
     } catch (error) {
-      console.error(error)
+      logError("Failed to copy quote card", { error })
       toast.error("Failed to copy card")
     } finally {
       setIsCopying(false)

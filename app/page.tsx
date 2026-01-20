@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer"
 import { QuotesFeed } from "@/components/quotes-feed"
 import { HeroQuoteCard } from "@/components/hero-quote-card"
 import { createStaticClient } from "@/lib/supabase/static"
+import { logWarn } from "@/lib/logger"
 
 // ISR: Regenerate page every 60 seconds for near-instant navigation
 // while keeping data reasonably fresh (quotes don't change often)
@@ -49,7 +50,7 @@ export default async function HomePage() {
       quoteOfTheDay = data
     }
   } else {
-    console.warn("Supabase client not initialized. Missing environment variables.")
+    logWarn("Supabase client not initialized. Missing environment variables.")
   }
 
   return (

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { headers } from "next/headers"
+import { logError, logWarn } from "@/lib/logger"
 
 /**
  * Checks if the current requester has exceeded the rate limit for a specific action.
@@ -26,7 +27,7 @@ export async function checkRateLimit(
     
     if (!supabase) {
       // Fail open if database is unavailable to ensure user functionality
-      console.error("Rate limit check failed: Supabase client unavailable")
+      logError("Rate limit check failed: Supabase client unavailable", { action })
       return { allowed: true }
     }
 
@@ -37,12 +38,13 @@ export async function checkRateLimit(
     })
 
     if (error) {
-      console.error("Rate limit check RPC error:", error)
+      logError("Rate limit check RPC error", { error, action })
       // Fail open on error
       return { allowed: true }
     }
 
     if (!allowed) {
+      logWarn("Rate limit exceeded", { action, limit, windowSeconds })
       return { 
         allowed: false, 
         message: "Too many requests. Please try again later." 
@@ -51,7 +53,7 @@ export async function checkRateLimit(
 
     return { allowed: true }
   } catch (error) {
-    console.error("Unexpected error in checkRateLimit:", error)
+    logError("Unexpected error in checkRateLimit", { error, action })
     return { allowed: true }
   }
 }
