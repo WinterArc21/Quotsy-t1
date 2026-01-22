@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, spring, useVideoConfig, interpolate } from 'remotion';
 import { loadFont } from '@remotion/google-fonts/PlayfairDisplay';
+import { AuthorSignature } from './AuthorSignature';
 
 const { fontFamily } = loadFont();
 
@@ -59,27 +60,59 @@ export const SceneCustomization: React.FC = () => {
             >
                 {/* 1. Light Theme (Default bottom layer) */}
                 <div style={{ ...cardStyle, background: 'rgba(255, 255, 255, 1)', color: '#1a1a1a' }}>
-                    <QuoteText color="#1a1a1a" />
+                    <QuoteText color="#1a1a1a" author="Leonardo da Vinci" />
                 </div>
 
                 {/* 2. Dark Theme layer */}
                 <div style={{ ...cardStyle, background: '#1a1a1a', color: '#fff', opacity: darkThemeOpacity }}>
-                    <QuoteText color="#fff" />
+                    <QuoteText color="#fff" author="Leonardo da Vinci" />
                 </div>
 
                 {/* 3. Pink Theme layer */}
                 <div style={{ ...cardStyle, background: '#ffe4e6', color: '#881337', opacity: pinkThemeOpacity }}>
-                    <QuoteText color="#881337" />
+                    <QuoteText color="#881337" author="Leonardo da Vinci" />
                 </div>
 
                 {/* 4. Gradient Theme layer */}
                 <div style={{ ...cardStyle, background: 'linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)', color: '#1a1a1a', opacity: gradientThemeOpacity }}>
-                    <QuoteText color="#4a1a1c" />
+                    <QuoteText color="#4a1a1c" author="Leonardo da Vinci" />
                 </div>
             </div>
+
+            {/* Animated Cursor Interaction */}
+            <CursorInteraction frame={frame} />
         </AbsoluteFill>
     );
 };
+
+const CursorInteraction: React.FC<{ frame: number }> = ({ frame }) => {
+    // Timed clicks synced with theme switches:
+    // Dark: around 30, Pink: around 60, Gradient: around 90
+    const cursorX = interpolate(frame, [0, 25, 30, 55, 60, 85, 90], [1200, 1100, 1100, 1150, 1150, 1050, 1050]);
+    const cursorY = interpolate(frame, [0, 25, 30, 55, 60, 85, 90], [800, 600, 600, 620, 620, 580, 580]);
+
+    const clickScale = interpolate(
+        frame,
+        [28, 32, 58, 62, 88, 92],
+        [1, 0.8, 1, 0.8, 1, 0.8],
+        { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+    );
+
+    return (
+        <div style={{
+            position: 'absolute',
+            left: cursorX,
+            top: cursorY,
+            transform: `scale(${clickScale})`,
+            zIndex: 100,
+            pointerEvents: 'none'
+        }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="#1a1a1a" stroke="white" strokeWidth="2" strokeLinejoin="round" />
+            </svg>
+        </div>
+    );
+}
 
 const cardStyle: React.CSSProperties = {
     position: 'absolute',
@@ -95,12 +128,12 @@ const cardStyle: React.CSSProperties = {
     transition: 'background 0.3s ease', // Smooth CSS transition for safety
 };
 
-const QuoteText = ({ color }: { color: string }) => (
+const QuoteText = ({ color, author }: { color: string; author: string }) => (
     <div style={{ textAlign: 'center', fontFamily, fontStyle: 'italic', color }}>
         <div style={{ fontSize: 80, opacity: 0.2, lineHeight: 0.5, marginBottom: 15 }}>“</div>
         <div style={{ fontSize: 32, lineHeight: 1.5, marginBottom: 30 }}>
             Simplicity is the ultimate sophistication.
         </div>
-        <div style={{ fontSize: 20, fontWeight: 600, opacity: 0.9 }}>Leonardo da Vinci</div>
+        <AuthorSignature name={author} color={color} fontSize={24} />
     </div>
 );

@@ -3,6 +3,7 @@ import { Logo } from './Logo';
 import { SceneDailyQuote } from './SceneDailyQuote';
 import { SceneGenres } from './SceneGenres';
 import { SceneCustomization } from './SceneCustomization';
+import { GrainOverlay } from './GrainOverlay';
 import { loadFont } from '@remotion/google-fonts/PlayfairDisplay';
 
 const { fontFamily } = loadFont();
@@ -18,6 +19,7 @@ export const IntroVideo = () => {
 
     return (
         <AbsoluteFill style={{ backgroundColor: '#fafafa', overflow: 'hidden' }}>
+            <GrainOverlay />
             {/* Background Blobs (Enhanced) */}
             <div style={{
                 position: 'absolute', top: -150, right: -150, width: 700, height: 700,
@@ -94,13 +96,12 @@ export const IntroVideo = () => {
                         Quotsy.me
                     </div>
                     <div style={{
-                        marginTop: 60, // Increased to 60px to GUARANTEE no overlap
+                        marginTop: 60,
                         fontSize: 32,
                         fontFamily: 'Inter, sans-serif',
                         fontWeight: 500,
                         color: '#666',
                         opacity: interpolate(frame - 360, [8, 18], [0, 1]),
-                        transform: `translateY(${interpolate(frame - 360, [8, 18], [10, 0])}px)`
                     }}>
                         Subscribe Today
                     </div>
