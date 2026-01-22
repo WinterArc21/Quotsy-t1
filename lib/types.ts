@@ -14,6 +14,7 @@ export interface Subscriber {
   genres: string[]
   verified: boolean
   subscribed_at: string
+  last_daily_quote_at: string | null
 }
 
 export interface PendingQuote {
