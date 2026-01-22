@@ -38,7 +38,7 @@ export const SceneGenres: React.FC = () => {
             })}
             <div style={{
                 position: 'absolute',
-                top: 150,
+                top: 280, // Moved down to get closer to genres
                 width: '100%',
                 textAlign: 'center',
                 fontFamily: 'Playfair Display',
