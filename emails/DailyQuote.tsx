@@ -47,7 +47,7 @@ export function DailyQuoteEmail({
                     <Text style={text}>
                         Explore more quotes at{" "}
                         <Link href={baseUrl} style={link}>
-                            {new URL(baseUrl).hostname}
+                            Quotsy.me
                         </Link>
                     </Text>
 
@@ -128,7 +128,9 @@ const footer: React.CSSProperties = {
 }
 
 const link: React.CSSProperties = {
-    color: "#525252",
+    color: "#171717",
+    fontWeight: "bold",
+    textDecoration: "underline",
 }
 
 export default DailyQuoteEmail

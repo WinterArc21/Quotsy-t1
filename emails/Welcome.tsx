@@ -44,7 +44,7 @@ export function WelcomeEmail({ name, genres, unsubscribeUrl, baseUrl }: WelcomeE
 
                     <Text style={text}>
                         Your first daily quote will arrive tomorrow morning. Until then,
-                        explore our full collection at <Link href={baseUrl} style={link}>{new URL(baseUrl).hostname}</Link>.
+                        explore our full collection at <Link href={baseUrl} style={link}>Quotsy.me</Link>.
                     </Text>
 
                     <Text style={footer}>
@@ -125,7 +125,9 @@ const footer: React.CSSProperties = {
 }
 
 const link: React.CSSProperties = {
-    color: "#525252",
+    color: "#171717",
+    fontWeight: "bold",
+    textDecoration: "underline",
 }
 
 export default WelcomeEmail

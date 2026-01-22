@@ -38,7 +38,7 @@ export function GenreUpdateEmail({ name, genres, unsubscribeUrl, baseUrl }: Genr
                         Your next daily quote will reflect your new preferences. In the meantime,
                         explore more inspiration at{" "}
                         <Link href={baseUrl} style={link}>
-                            {new URL(baseUrl).hostname}
+                            Quotsy.me
                         </Link>
                         .
                     </Text>
@@ -100,7 +100,9 @@ const footer: React.CSSProperties = {
 }
 
 const link: React.CSSProperties = {
-    color: "#525252",
+    color: "#171717",
+    fontWeight: "bold",
+    textDecoration: "underline",
 }
 
 export default GenreUpdateEmail
