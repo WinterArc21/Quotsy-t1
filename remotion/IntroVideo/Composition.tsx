@@ -60,11 +60,10 @@ export const IntroVideo = () => {
                 </AbsoluteFill>
             </Sequence>
 
-            {/* 2. Feature 1: Daily Quote (2-5s) [90 frames] */}
-            <Sequence from={60} durationInFrames={100}>
-                <TransitionInOut duration={100}>
-                    <SceneDailyQuote />
-                </TransitionInOut>
+            {/* 2. Feature 1: Daily Quote (2-5.3s) [110 frames] */}
+            <Sequence from={60} durationInFrames={110}>
+                {/* We removed TransitionInOut here because the scene now has its own morphing entry */}
+                <SceneDailyQuote />
             </Sequence>
 
             {/* 3. Feature 2: Customization (5-9s) [120 frames] */}
